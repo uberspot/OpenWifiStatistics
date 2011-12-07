@@ -6,13 +6,13 @@
 		<LinearLayout 
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
-		    android:isScrollContainer="true"
 		    android:orientation="vertical"
 		    android:soundEffectsEnabled="true">
 		
 		    <TextView
 		        android:layout_width="fill_parent"
 		        android:layout_height="62dp"
+		        android:textAppearance="?android:attr/textAppearanceLarge"
 		        android:gravity="center_vertical|center_horizontal"
 		        android:text="@string/app_name" />
 		
@@ -38,6 +38,7 @@
 		        android:id="@+id/measureConnection"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
+		        android:onClick="goToMeasureConnection"
 		        android:text="@string/measure_connection" />
 		
 		    <Button
