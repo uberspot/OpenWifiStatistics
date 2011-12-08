@@ -16,6 +16,20 @@ public class StartPage extends Activity {
     public void goToMeasureConnection(View v) {
     	Intent i = new Intent(this, MeasureConnectionPage.class);
         startActivity(i);
-      }
+    }
+    
+    public void goToStatistics(View v) {
+    	Intent i = new Intent(this, StatisticsPage.class);
+        startActivity(i);
+    }
+    
+    public void goToSettings(View v) {
+    	Intent i = new Intent(this, SettingsPage.class);
+        startActivity(i);
+    }
+    
+    public void toggleMonitoring(View v) {
+    	//toggle dem monitoring
+    }
 
 }

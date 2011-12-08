@@ -26,13 +26,15 @@
 		        android:id="@+id/toggleMonitoring"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
+		        android:onClick="toggleMonitoring"
 		        android:text="@string/start_monitoring" />
 		
 		    <Button
 		        android:id="@+id/showStatistics"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:text="@string/show_statistics" />
+		        android:onClick="goToStatistics"
+		        android:text="@string/statistics" />
 		
 		    <Button
 		        android:id="@+id/measureConnection"
@@ -45,6 +47,7 @@
 		        android:id="@+id/settings"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
+		        android:onClick="goToSettings"
 		        android:text="@string/settings" />
 		
 		</LinearLayout>
