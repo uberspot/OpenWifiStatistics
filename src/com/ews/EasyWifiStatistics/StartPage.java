@@ -4,13 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 public class StartPage extends Activity {
+	
+	private boolean monitoringStarted;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.startpage);
+        this.monitoringStarted = false;
     }
     
     public void goToMeasureConnection(View v) {
@@ -29,7 +34,15 @@ public class StartPage extends Activity {
     }
     
     public void toggleMonitoring(View v) {
-    	//toggle dem monitoring
+    	Button button = (Button) findViewById(R.id.toggleMonitoring);
+    	if(monitoringStarted){
+    		stopService(new Intent(StartPage.this, MonitoringService.class));
+    		button.setText(R.string.start_monitoring);
+    	}else {
+            startService(new Intent(StartPage.this, MonitoringService.class));
+            button.setText(R.string.stop_monitoring);
+    	}
+    	monitoringStarted = !monitoringStarted;
     }
 
 }
