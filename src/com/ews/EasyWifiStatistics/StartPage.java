@@ -1,5 +1,7 @@
 package com.ews.EasyWifiStatistics;
 
+import com.ews.EasyWifiStatistics.Services.MonitoringService;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +19,15 @@ public class StartPage extends Activity {
         setContentView(R.layout.startpage);
         this.monitoringStarted = false;
     }
+    
+    @Override
+	public void onDestroy() {
+    	if(monitoringStarted){
+    		stopService(new Intent(StartPage.this, MonitoringService.class));
+    	}
+    	super.onDestroy();
+		this.finish();
+	}
     
     public void goToMeasureConnection(View v) {
     	Intent i = new Intent(this, MeasureConnectionPage.class);
@@ -43,6 +54,8 @@ public class StartPage extends Activity {
             button.setText(R.string.stop_monitoring);
     	}
     	monitoringStarted = !monitoringStarted;
+    	Intent i = new Intent(this, ScanResultsPage.class);
+        startActivity(i);
     }
 
 }
