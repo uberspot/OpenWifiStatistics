@@ -10,15 +10,39 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.widget.Toast;
 
 public class MonitoringService extends Service {
 	
+	private Handler uiHandler=null;
 	
+	public void setUIHandler(Handler uiHandler){ this.uiHandler = uiHandler; }
+	
+	/** Handles responses from the wifi scan receiver */
+	private Handler handler = new Handler(){
+        @Override public void handleMessage(Message msg) {
+        	switch(msg.what) {
+        		case 0: 
+        			List<ScanResult> results = (List<ScanResult>) msg.obj;
+        			for (ScanResult result : results) {
+        				//cache scan results internally 
+        			}
+        			Message message = new Message();
+        			message.what = 1;
+        			message.obj = results;
+        			uiHandler.sendMessage(message);
+        			break;
+        	}
+            super.handleMessage(msg);
+        }
+    };
 	
 	/** Provides access to android's wifi info */
 	private WifiManager wifi = null;
@@ -44,13 +68,12 @@ public class MonitoringService extends Service {
 		
 		// Register Broadcast Receiver
 	    if (receiver == null)
-	     	receiver = new WifiBReceiver(wifi);
+	     	receiver = new WifiBReceiver(wifi, handler);
 	
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
-	    wifi.startScan();
 		//Todo: schedule autoupload of stats to server task every x minutes
-		//Todo: schedule measurement of wifi stats task every x seconds  with wifi.startScan();
+		//Todo: schedule measurement of wifi stats task every x seconds with wifi.startScan();
 		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
 	}
 	
@@ -60,6 +83,17 @@ public class MonitoringService extends Service {
 		unregisterReceiver(receiver);
 		timer.cancel();
 		Toast.makeText(this, "Service destroyed...", Toast.LENGTH_SHORT).show();
+	}
+	
+	/** Performs a scan via WifiManagers interface
+	 * @return true if the scan can be performed, false otherwise
+	 */
+	public boolean doScan(){
+		if (wifi!=null && wifi.isWifiEnabled()){
+			wifi.startScan();
+			return true;
+		}
+		return false;
 	}
 	
 	public WifiInfo getWifiInfo(){

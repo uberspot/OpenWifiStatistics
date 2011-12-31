@@ -7,24 +7,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Message;
 
 public class WifiBReceiver extends BroadcastReceiver {
 
-	WifiManager manager;
-
-	public WifiBReceiver(WifiManager manager) {
+	private WifiManager manager;
+	private Handler handler = null;
+	
+	public WifiBReceiver(WifiManager manager, Handler handler) {
 	  super();
 	  this.manager = manager;
+	  this.handler = handler;
 	}
 	
 	@Override
 	public void onReceive(Context c, Intent intent) {
 		List<ScanResult> results = manager.getScanResults();
-		for (ScanResult result : results) {
-				System.out.println("BSSID: " + result.BSSID + " freq: " + result.frequency );      
-				//Todo: print statistics to ScanResultsPage via Handler...
-		}
-	    
+		Message message = new Message();
+		message.what = 0;
+		message.obj = results;
+		handler.sendMessage(message);
 	}
-
 }
