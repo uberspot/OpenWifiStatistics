@@ -2,6 +2,7 @@ package com.ews.EasyWifiStatistics.Services;
 
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import com.ews.EasyWifiStatistics.Globals;
 
@@ -32,12 +33,14 @@ public class MonitoringService extends Service {
         		case 0: 
         			List<ScanResult> results = (List<ScanResult>) msg.obj;
         			for (ScanResult result : results) {
-        				//cache scan results internally 
+        				//cache scan results (either internally or in a database[better])
         			}
-        			Message message = new Message();
-        			message.what = 1;
-        			message.obj = results;
-        			uiHandler.sendMessage(message);
+        			if(uiHandler!=null) {
+	        			Message message = new Message();
+	        			message.what = 1;
+	        			message.obj = results;
+	        			uiHandler.sendMessage(message);
+        			}
         			break;
         	}
             super.handleMessage(msg);
@@ -46,6 +49,8 @@ public class MonitoringService extends Service {
 	
 	/** Provides access to android's wifi info */
 	private WifiManager wifi = null;
+	
+	private static final int scanTimeout = 5000;
 	
 	/** Listens for results of wifi scans */
 	BroadcastReceiver receiver;
@@ -73,7 +78,7 @@ public class MonitoringService extends Service {
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
 		//Todo: schedule autoupload of stats to server task every x minutes
-		//Todo: schedule measurement of wifi stats task every x seconds with wifi.startScan();
+	    timer.schedule( new ScanTask() , scanTimeout, scanTimeout);
 		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
 	}
 	
@@ -103,4 +108,13 @@ public class MonitoringService extends Service {
 	public List<WifiConfiguration> getConfiguredNetworks(){
 		return (wifi==null) ? null : wifi.getConfiguredNetworks();
 	}
+	
+	/** Task that just performs a scan. */
+    private class ScanTask extends TimerTask {
+    	ScanTask() {}
+
+        @Override public void run() {
+        	doScan();
+        }
+    }
 }
