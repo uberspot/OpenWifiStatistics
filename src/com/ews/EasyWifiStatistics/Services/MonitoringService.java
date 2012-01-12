@@ -1,5 +1,6 @@
 package com.ews.EasyWifiStatistics.Services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 
 public class MonitoringService extends Service {
 	
+	/* Handler stuff */
+	
 	private Handler uiHandler=null;
 	
 	public void setUIHandler(Handler uiHandler){ this.uiHandler = uiHandler; }
@@ -32,9 +35,13 @@ public class MonitoringService extends Service {
         	switch(msg.what) {
         		case 0: 
         			List<ScanResult> results = (List<ScanResult>) msg.obj;
-        			for (ScanResult result : results) {
-        				//cache scan results (either internally or in a database[better])
-        			}
+        			
+        			scanResults.add(results);
+        			
+        			/* save scan results (either internally or in a database[better]) to preserve in case the service stops
+        			 * or possibly save the results in the onDestroy() function 
+	    			*/
+        			
         			if(uiHandler!=null) {
 	        			Message message = new Message();
 	        			message.what = 1;
@@ -47,10 +54,16 @@ public class MonitoringService extends Service {
         }
     };
 	
+	/* Cached scanResults */
+	private ArrayList<List<ScanResult>> scanResults;
+	
+	private ResultUploader formUploader;
+	
 	/** Provides access to android's wifi info */
 	private WifiManager wifi = null;
 	
-	private static final int scanTimeout = 5000;
+	private static final int scanTimeout = 5000; //5 seconds
+	private static final int uploadTimeout = 300000; //5 minutes
 	
 	/** Listens for results of wifi scans */
 	BroadcastReceiver receiver;
@@ -69,6 +82,8 @@ public class MonitoringService extends Service {
 		
 		timer = new Timer();
 		
+		formUploader = new ResultUploader("http://formurl.com/something.php");
+		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		
 		// Register Broadcast Receiver
@@ -77,8 +92,8 @@ public class MonitoringService extends Service {
 	
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
-		//Todo: schedule autoupload of stats to server task every x minutes
 	    timer.schedule( new ScanTask() , scanTimeout, scanTimeout);
+	    timer.schedule( new UploadResultsTask() , uploadTimeout, uploadTimeout);
 		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
 	}
 	
@@ -101,6 +116,29 @@ public class MonitoringService extends Service {
 		return false;
 	}
 	
+	/** Uploads the currently cached lists of scan results.
+	 * After the upload it checks each result to see if it was uploaded successfully.
+	 * If it was it removes it from its list.
+	 * If a list of results is fully uploaded (meaning all the results are successfully uploaded)
+	 * it deletes it from the cached lists.
+	 */
+	public void uploadResults() {
+		List<ScanResult> results;
+		ArrayList<Boolean> validUploads;
+		for(int i = 0; i < scanResults.size(); i++){
+			results = scanResults.get(i);
+			validUploads = formUploader.uploadResults(results);
+    		for(int j = 0; j <validUploads.size(); j++){
+    			if( validUploads.get(j) ){
+    				validUploads.remove(j);
+    				results.remove(j--);
+    			}
+    		}
+    		if(results.isEmpty())
+    			scanResults.remove(i--);
+    	}
+	}
+	
 	public WifiInfo getWifiInfo(){
 		return (wifi==null) ? null : wifi.getConnectionInfo();
 	}
@@ -109,12 +147,21 @@ public class MonitoringService extends Service {
 		return (wifi==null) ? null : wifi.getConfiguredNetworks();
 	}
 	
+	/* TASKS */
+	
 	/** Task that just performs a scan. */
     private class ScanTask extends TimerTask {
-    	ScanTask() {}
-
         @Override public void run() {
         	doScan();
+        }
+    }
+    
+    /** Task that just performs a scan. */
+    private class UploadResultsTask extends TimerTask {
+        @Override public void run() {
+        	if (wifi!=null && wifi.isWifiEnabled()){ //also check if is currently connected to internet
+        		uploadResults();
+        	}
         }
     }
 }

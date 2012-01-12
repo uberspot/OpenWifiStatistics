@@ -23,10 +23,10 @@ public class ScanResultsPage extends Activity {
 	private Handler handler = new Handler(){
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
-        		case 1: 
+        		case 1:
         			List<ScanResult> results = (List<ScanResult>) msg.obj;
         			resultsView.setText("");
-        			for (ScanResult result : results) { 
+        			for (ScanResult result : results) {
         				resultsView.append(result.toString() + "\n"); //todo: display results in a prettier way 
         			}
         			break;
