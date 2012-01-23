@@ -1,5 +1,6 @@
 package com.ews.EasyWifiStatistics.Services;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -82,7 +83,13 @@ public class MonitoringService extends Service {
 		
 		timer = new Timer();
 		
-		formUploader = new ResultUploader("http://formurl.com/something.php");
+		formUploader = new ResultUploader();
+		try {
+			formUploader.setURL("http://formurl.com/something.php");
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		
@@ -123,6 +130,7 @@ public class MonitoringService extends Service {
 	 * it deletes it from the cached lists.
 	 */
 	public void uploadResults() {
+		/*
 		List<ScanResult> results;
 		ArrayList<Boolean> validUploads;
 		for(int i = 0; i < scanResults.size(); i++){
@@ -137,6 +145,7 @@ public class MonitoringService extends Service {
     		if(results.isEmpty())
     			scanResults.remove(i--);
     	}
+		*/
 	}
 	
 	public WifiInfo getWifiInfo(){
