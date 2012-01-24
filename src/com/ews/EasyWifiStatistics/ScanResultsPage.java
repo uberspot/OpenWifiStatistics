@@ -24,7 +24,8 @@ public class ScanResultsPage extends Activity {
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
         		case 1:
-        			List<ScanResult> results = (List<ScanResult>) msg.obj;
+        			@SuppressWarnings("unchecked")
+					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			resultsView.setText("");
         			for (ScanResult result : results) {
         				resultsView.append(result.toString() + "\n"); //todo: display results in a prettier way 

@@ -35,7 +35,8 @@ public class MonitoringService extends Service {
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
         		case 0: 
-        			List<ScanResult> results = (List<ScanResult>) msg.obj;
+        			@SuppressWarnings("unchecked")
+					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
         			scanResults.add(results);
         			
@@ -87,8 +88,7 @@ public class MonitoringService extends Service {
 		try {
 			formUploader.setURL("http://formurl.com/something.php");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Malformed URL: " + e);
 		}
 		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -130,12 +130,11 @@ public class MonitoringService extends Service {
 	 * it deletes it from the cached lists.
 	 */
 	public void uploadResults() {
-		/*
 		List<ScanResult> results;
 		ArrayList<Boolean> validUploads;
 		for(int i = 0; i < scanResults.size(); i++){
 			results = scanResults.get(i);
-			validUploads = formUploader.uploadResults(results);
+			validUploads = formUploader.sendAll(results);
     		for(int j = 0; j <validUploads.size(); j++){
     			if( validUploads.get(j) ){
     				validUploads.remove(j);
@@ -145,7 +144,6 @@ public class MonitoringService extends Service {
     		if(results.isEmpty())
     			scanResults.remove(i--);
     	}
-		*/
 	}
 	
 	public WifiInfo getWifiInfo(){
