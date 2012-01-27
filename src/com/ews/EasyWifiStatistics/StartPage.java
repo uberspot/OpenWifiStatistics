@@ -41,6 +41,11 @@ public class StartPage extends Activity {
     
     public void goToSettings(View v) {
     	Intent i = new Intent(this, SettingsPage.class);
+        startActivity(i); 
+    }
+    
+    public void goToMap(View v) {
+    	Intent i = new Intent(this, WifiMapPage.class);
         startActivity(i);
     }
     

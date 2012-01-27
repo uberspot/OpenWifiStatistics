@@ -8,5 +8,6 @@
     <string name="settings">Settings</string>
     <string name="scan_results">Scan Results</string>
     <string name="scan">Scan</string>
+    <string name="map">Wifi Map</string>
 
 </resources>

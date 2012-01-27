@@ -49,6 +49,13 @@
 		        android:layout_height="wrap_content"
 		        android:onClick="goToSettings"
 		        android:text="@string/settings" />
+		    
+		    <Button
+		        android:id="@+id/map"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:onClick="goToMap"
+		        android:text="@string/map" />
 		
 		</LinearLayout>
 </ScrollView>
