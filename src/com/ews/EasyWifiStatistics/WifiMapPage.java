@@ -9,7 +9,7 @@ public class WifiMapPage extends MapActivity {
 	 @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.wifimap);
+        setContentView(R.layout.wifimappage);
     }
 	
 	@Override
