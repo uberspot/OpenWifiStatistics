@@ -11,7 +11,7 @@
         android:layout_height="fill_parent"
  		android:enabled="true"
         android:clickable="true"
-        android:apiKey="GOOGLE API KEY"
+        android:apiKey=""
     />
 
 </RelativeLayout>

@@ -41,7 +41,8 @@ public class MonitoringService extends Service {
         			@SuppressWarnings("unchecked")
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
-        			scanResults.add(results);
+        			for(ScanResult result : results)
+        				scanResults.add(new EScanResult(result, latitude, longitude));
         			
         			/* save scan results (either internally or in a database[better]) to preserve in case the service stops
         			 * or possibly save the results in the onDestroy() function 
@@ -60,7 +61,7 @@ public class MonitoringService extends Service {
     };
 	
 	/* Cached scanResults */
-	private ArrayList<List<ScanResult>> scanResults;
+	private ArrayList<EScanResult> scanResults;
 	
 	private ResultUploader formUploader;
 	
@@ -118,7 +119,8 @@ public class MonitoringService extends Service {
 		
 		Globals.service = this;
 		
-		scanResults = new ArrayList<List<ScanResult>>();
+		//Load saved/serialized EScanResults in case they don't get uploaded in time
+		scanResults = new ArrayList<EScanResult>();
 		
 		timer = new Timer();
 		
@@ -154,6 +156,7 @@ public class MonitoringService extends Service {
 		unregisterReceiver(receiver);
 		timer.cancel();
 		locationFinder.stopListening();
+		//Save serializable EScanResults
 		Globals.service = null;
 		Toast.makeText(this, "Service destroyed...", Toast.LENGTH_SHORT).show();
 	}
@@ -176,19 +179,11 @@ public class MonitoringService extends Service {
 	 * it deletes it from the cached lists.
 	 */
 	public void uploadResults() {
-		List<ScanResult> results;
-		ArrayList<Boolean> validUploads;
 		for(int i = 0; i < scanResults.size(); i++){
-			results = scanResults.get(i);
-			validUploads = formUploader.sendAll(results);
-    		for(int j = 0; j <validUploads.size(); j++){
-    			if( validUploads.get(j) ){
-    				validUploads.remove(j);
-    				results.remove(j--);
-    			}
-    		}
-    		if(results.isEmpty())
-    			scanResults.remove(i--);
+			EScanResult result = scanResults.get(i);
+			if( formUploader.send(result) ) { 
+				scanResults.remove(i--);
+			}
     	}
 	}
 	

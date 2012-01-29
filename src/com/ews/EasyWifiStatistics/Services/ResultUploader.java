@@ -14,8 +14,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 
-import android.net.wifi.ScanResult;
-
 public class ResultUploader {
 	
     public static class HostNameVerifierAllowAll implements HostnameVerifier {
@@ -35,7 +33,7 @@ public class ResultUploader {
 	 * @param result
 	 * @return true if the upload was successful, false if the url was null or an IOException occurred
 	 */
-	public boolean send(ScanResult result) {
+	public boolean send(EScanResult result) {
 			if(url==null)
 				return false;
         	HttpURLConnection connection;
@@ -63,7 +61,7 @@ public class ResultUploader {
 	 * @param result
 	 * @return true if the upload was successful, false if the url was null or an IOException occurred
 	 */
-	public boolean sendHTTPS(HostnameVerifier verifier, ScanResult result) {
+	public boolean sendHTTPS(HostnameVerifier verifier, EScanResult result) {
 			if(url==null)
 				return false;
         	HttpsURLConnection connection;
@@ -91,13 +89,15 @@ public class ResultUploader {
 	 * @param result
 	 * @return a UTF-8 String representation of the given result 
 	 */
-	public static String resultToString(ScanResult result) {
+	public static String resultToString(EScanResult result) {
 		try {
 			return  URLEncoder.encode("bssid", "UTF-8")+"="+URLEncoder.encode(result.BSSID, "UTF-8")
 					+ URLEncoder.encode("capabilities", "UTF-8")+"="+URLEncoder.encode(result.capabilities, "UTF-8")
 					+ URLEncoder.encode("ssid", "UTF-8")+"="+URLEncoder.encode(result.SSID, "UTF-8")
 					+ URLEncoder.encode("frequency", "UTF-8")+"="+URLEncoder.encode(result.frequency+"", "UTF-8")
-					+ URLEncoder.encode("level", "UTF-8")+"="+URLEncoder.encode( (result.level+""), "UTF-8");
+					+ URLEncoder.encode("level", "UTF-8")+"="+URLEncoder.encode( (result.level+""), "UTF-8")
+					+ URLEncoder.encode("latitude", "UTF-8")+"="+URLEncoder.encode(result.latitude+"", "UTF-8")
+					+ URLEncoder.encode("longitude", "UTF-8")+"="+URLEncoder.encode( (result.longitude+""), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			return "";
 		}
@@ -108,9 +108,9 @@ public class ResultUploader {
 	 * @return an array of boolean indicating the status of each results' upload. 
 	 * True if it was uploaded successfully, false otherwise.
 	 */
-	public ArrayList<Boolean> sendAll(List<ScanResult> results) {
+	public ArrayList<Boolean> sendAll(List<EScanResult> results) {
 		ArrayList<Boolean> validUploads = new ArrayList<Boolean>();
-		for(ScanResult result : results) {
+		for(EScanResult result : results) {
 			validUploads.add( send(result) );
 		}
 		return validUploads;
@@ -121,9 +121,9 @@ public class ResultUploader {
 	 * @return an array of boolean indicating the status of each results' upload. 
 	 * True if it was uploaded successfully, false otherwise.
 	 */
-	public ArrayList<Boolean> sendAllHTTPS(List<ScanResult> results) {
+	public ArrayList<Boolean> sendAllHTTPS(List<EScanResult> results) {
 		ArrayList<Boolean> validUploads = new ArrayList<Boolean>();
-		for(ScanResult result : results) {
+		for(EScanResult result : results) {
 			validUploads.add( sendHTTPS(new HostNameVerifierAllowAll(), result) );
 		}
 		return validUploads;
