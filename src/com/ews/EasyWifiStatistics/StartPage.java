@@ -57,10 +57,10 @@ public class StartPage extends Activity {
     	}else {
             startService(new Intent(StartPage.this, MonitoringService.class));
             button.setText(R.string.stop_monitoring);
+            startActivity(new Intent(this, ScanResultsPage.class));
     	}
     	monitoringStarted = !monitoringStarted;
-    	Intent i = new Intent(this, ScanResultsPage.class);
-        startActivity(i);
+        
     }
 
 }

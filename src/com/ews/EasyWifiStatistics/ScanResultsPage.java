@@ -44,8 +44,6 @@ public class ScanResultsPage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scanresultspage);
         
-        Globals.service.setUIHandler(handler);
-        
         resultsView = (TextView) findViewById(R.id.results);
         
 		resultsView.append("\n\nWiFi Status: " + Globals.service.getWifiInfo().toString());
@@ -55,6 +53,12 @@ public class ScanResultsPage extends Activity {
 		for (WifiConfiguration config : configs) {
 			resultsView.append("\n\n" + config.toString());
 		}
+    }
+    
+    @Override
+    public void onResume(){ 
+        super.onResume();
+        Globals.service.setUIHandler(handler);
     }
     
     /** Called when the Scan Button is clicked

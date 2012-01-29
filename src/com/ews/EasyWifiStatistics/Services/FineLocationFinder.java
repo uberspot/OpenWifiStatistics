@@ -47,9 +47,6 @@ public class FineLocationFinder {
 		// exceptions will be thrown if provider is not permitted.
 		try {
 			gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-		} catch (Exception ex) {
-		}
-		try {
 			network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		} catch (Exception ex) {
 		}

@@ -13,10 +13,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -25,7 +29,6 @@ import android.widget.Toast;
 public class MonitoringService extends Service {
 	
 	/* Handler stuff */
-	
 	private Handler uiHandler=null;
 	
 	public void setUIHandler(Handler uiHandler){ this.uiHandler = uiHandler; }
@@ -73,6 +76,39 @@ public class MonitoringService extends Service {
 	/** Schedules autoupload tasks and wifi scan tasks */
 	Timer timer;
 
+	/** Location stuff */
+	private LocationFinder locationFinder;
+	
+	private boolean providerDisabled = true;
+	private double longitude, latitude;
+	
+	public double getLongitude() { return longitude; }
+	public double getLatitude() { return latitude; }
+	
+	public boolean isProviderDisabled() { return providerDisabled; }
+	
+	LocationListener listener = new LocationListener(){
+		public void onLocationChanged(Location location) {
+			if(!(location.getProvider().equalsIgnoreCase("gps") || location.getProvider().equalsIgnoreCase("network"))) {
+				latitude = LocationFinder.defaultLatitude;
+	        	longitude = LocationFinder.defaultLongitude;
+	        } else {
+	        	latitude = location.getLatitude();
+	        	longitude = location.getLongitude();
+	        	providerDisabled = false;
+    			if(uiHandler!=null)
+    				uiHandler.sendEmptyMessage(2);
+	        }
+			System.out.println("Location: " + latitude + " " + longitude);
+		}
+
+		public void onProviderDisabled(String provider) {
+			providerDisabled = true;
+		}
+		public void onProviderEnabled(String provider) {}
+		public void onStatusChanged(String provider, int status, Bundle extras) { }
+		};
+	
 	@Override
 	public IBinder onBind(Intent arg0) { return null; }
 	
@@ -82,7 +118,15 @@ public class MonitoringService extends Service {
 		
 		Globals.service = this;
 		
+		scanResults = new ArrayList<List<ScanResult>>();
+		
 		timer = new Timer();
+		
+		//start listening for current location
+		locationFinder = new LocationFinder((LocationManager) getSystemService(Context.LOCATION_SERVICE), listener);
+		locationFinder.startListening();
+		latitude = LocationFinder.defaultLatitude;
+    	longitude = LocationFinder.defaultLongitude;
 		
 		formUploader = new ResultUploader();
 		try {
@@ -106,9 +150,11 @@ public class MonitoringService extends Service {
 	
 	@Override
 	public void onDestroy() {
-		super.onDestroy();  
+		super.onDestroy();
 		unregisterReceiver(receiver);
 		timer.cancel();
+		locationFinder.stopListening();
+		Globals.service = null;
 		Toast.makeText(this, "Service destroyed...", Toast.LENGTH_SHORT).show();
 	}
 	
