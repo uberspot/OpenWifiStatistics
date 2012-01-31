@@ -15,6 +15,8 @@ public class LocationFinder  {
 	 */
 	public static final double defaultLatitude = 37.98, defaultLongitude = 23.73;
 	
+	public boolean startedListening;
+	
 	private LocationManager locationManager;
 	private LocationListener locationListener;
 	private Criteria criteria = new Criteria();
@@ -51,6 +53,7 @@ public class LocationFinder  {
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
 		criteria.setSpeedRequired(false);
+		startedListening = false;
 	}
 
 	public void startListening() {
@@ -62,9 +65,11 @@ public class LocationFinder  {
 			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, gpsmintimeinterval, gpsmindist, innerLocationManager);
 		if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ) 
 			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, netmintimeinterval, netmindist, innerLocationManager);
+		startedListening = true;
 	}
 	
 	public void stopListening() {
 		locationManager.removeUpdates(innerLocationManager);
+		startedListening = false;
 	}	
 }

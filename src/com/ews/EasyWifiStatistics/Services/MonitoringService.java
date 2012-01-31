@@ -55,6 +55,13 @@ public class MonitoringService extends Service {
 	        			uiHandler.sendMessage(message);
         			}
         			break;
+        		case 1:
+        			locationFinder.startListening();
+        			break;
+        		case 2:
+        			if(locationFinder.startedListening)
+        				locationFinder.stopListening();
+        			break;
         	}
             super.handleMessage(msg);
         }
@@ -68,8 +75,8 @@ public class MonitoringService extends Service {
 	/** Provides access to android's wifi info */
 	private WifiManager wifi = null;
 	
-	private static final int scanTimeout = 5000; //5 seconds
-	private static final int uploadTimeout = 300000; //5 minutes
+	// 8 seconds between scans, 5 minutes between form uploads, 2 minutes between location updates
+	private static final int scanTimeout = 8000, uploadTimeout = 300000, locationTimeout = 120000; 
 	
 	/** Listens for results of wifi scans */
 	BroadcastReceiver receiver;
@@ -126,7 +133,7 @@ public class MonitoringService extends Service {
 		
 		//start listening for current location
 		locationFinder = new LocationFinder((LocationManager) getSystemService(Context.LOCATION_SERVICE), listener);
-		locationFinder.startListening();
+		
 		latitude = LocationFinder.defaultLatitude;
     	longitude = LocationFinder.defaultLongitude;
 		
@@ -146,7 +153,9 @@ public class MonitoringService extends Service {
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
 	    timer.schedule( new ScanTask() , scanTimeout, scanTimeout);
-	    timer.schedule( new UploadResultsTask() , uploadTimeout, uploadTimeout);
+	    timer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
+	    timer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
+	    
 		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
 	}
 	
@@ -155,7 +164,8 @@ public class MonitoringService extends Service {
 		super.onDestroy();
 		unregisterReceiver(receiver);
 		timer.cancel();
-		locationFinder.stopListening();
+		if(locationFinder.startedListening)
+			locationFinder.stopListening();
 		//Save serializable EScanResults
 		Globals.service = null;
 		Toast.makeText(this, "Service destroyed...", Toast.LENGTH_SHORT).show();
@@ -210,6 +220,17 @@ public class MonitoringService extends Service {
         	if (wifi!=null && wifi.isWifiEnabled()){ //also check if is currently connected to internet
         		uploadResults();
         	}
+        }
+    }
+    
+    /** Task that listens for location changes for 60 seconds before powering off. */
+    private class GetLocationTask extends TimerTask {
+    	private Handler handler;
+    	public GetLocationTask(Handler handler) { this.handler = handler; }
+        @Override public void run() {
+        	handler.sendEmptyMessage(1);
+        	try { Thread.sleep(60000); } catch (InterruptedException e) { }
+        	handler.sendEmptyMessage(2);
         }
     }
 }
