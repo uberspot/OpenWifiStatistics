@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
+import com.ews.EasyWifiStatistics.Services.LocationFinder;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -53,6 +54,7 @@ public class WifiMapPage extends MapActivity {
                 return;
             } });
             alertDialog.show();
+            mapController.setCenter(new GeoPoint((int) (LocationFinder.defaultLatitude* 1E6), (int) (LocationFinder.defaultLongitude* 1E6)));
         } else {
         	Globals.service.setUIHandler(handler);
         	
@@ -66,8 +68,9 @@ public class WifiMapPage extends MapActivity {
 	            } });
 	            alertDialog.show();
 	        }
+	        mapController.setCenter(new GeoPoint((int) (Globals.service.getLatitude()* 1E6), (int) (Globals.service.getLongitude()* 1E6)));
 	    }
-        mapController.setCenter(new GeoPoint((int) (Globals.service.getLatitude()* 1E6), (int) (Globals.service.getLongitude()* 1E6)));
+        
     }
 	
 	@Override

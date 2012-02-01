@@ -76,7 +76,7 @@ public class MonitoringService extends Service {
 	private WifiManager wifi = null;
 	
 	// 8 seconds between scans, 5 minutes between form uploads, 2 minutes between location updates
-	private static final int scanTimeout = 8000, uploadTimeout = 300000, locationTimeout = 120000; 
+	private static final int scanTimeout = 10000, uploadTimeout = 300000, locationTimeout = 120000; 
 	
 	/** Listens for results of wifi scans */
 	BroadcastReceiver receiver;
@@ -139,7 +139,7 @@ public class MonitoringService extends Service {
 		
 		formUploader = new ResultUploader();
 		try {
-			formUploader.setURL("http://formurl.com/something.php");
+			formUploader.setURL("https://docs.google.com/spreadsheet/embeddedform?formkey=dG03djh0bHR5RFNURk4zRW5QQjNjb2c6MQ");
 		} catch (MalformedURLException e) {
 			System.out.println("Malformed URL: " + e);
 		}
@@ -191,8 +191,8 @@ public class MonitoringService extends Service {
 	public void uploadResults() {
 		for(int i = 0; i < scanResults.size(); i++){
 			EScanResult result = scanResults.get(i);
-			if( formUploader.send(result) ) { 
-				scanResults.remove(i--);
+			if( formUploader.sendHTTPS(new ResultUploader.HostNameVerifierAllowAll(), result) ) { 
+				scanResults.remove(i--); 
 			}
     	}
 	}

@@ -36,13 +36,16 @@ public class ResultUploader {
 	public boolean send(EScanResult result) {
 			if(url==null)
 				return false;
+
+			
         	HttpURLConnection connection;
 			try {
 				connection = (HttpURLConnection) url.openConnection();
 	            connection.setDoOutput(true);
 	            connection.setRequestMethod("POST");
 	            
-	            String content = ResultUploader.resultToString(result); 
+	            String content = ResultUploader.resultToString(result);
+	            System.out.println("Uploading " + content);
 	            connection.setFixedLengthStreamingMode(content.getBytes().length);
 	
 	            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
@@ -51,6 +54,7 @@ public class ResultUploader {
 	            out.close();
 	            connection.disconnect();
 			} catch (IOException e) {
+				System.out.println(e);
 				return false;
 			}
 			return true;
@@ -64,6 +68,7 @@ public class ResultUploader {
 	public boolean sendHTTPS(HostnameVerifier verifier, EScanResult result) {
 			if(url==null)
 				return false;
+			
         	HttpsURLConnection connection;
 			try {
 				connection = (HttpsURLConnection) url.openConnection();
@@ -72,6 +77,7 @@ public class ResultUploader {
 	            connection.setRequestMethod("POST");
 	            
 	            String content = ResultUploader.resultToString(result);
+	            System.out.println("Uploading " + content);
 	            connection.setFixedLengthStreamingMode(content.getBytes().length);
 	
 	            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
@@ -80,6 +86,7 @@ public class ResultUploader {
 	            out.close();
 	            connection.disconnect();
 			} catch (IOException e) {
+				System.out.println(e);
 				return false;
 			}
             return true;
@@ -91,14 +98,18 @@ public class ResultUploader {
 	 */
 	public static String resultToString(EScanResult result) {
 		try {
-			return  URLEncoder.encode("bssid", "UTF-8")+"="+URLEncoder.encode(result.BSSID, "UTF-8")
-					+ URLEncoder.encode("capabilities", "UTF-8")+"="+URLEncoder.encode(result.capabilities, "UTF-8")
-					+ URLEncoder.encode("ssid", "UTF-8")+"="+URLEncoder.encode(result.SSID, "UTF-8")
-					+ URLEncoder.encode("frequency", "UTF-8")+"="+URLEncoder.encode(result.frequency+"", "UTF-8")
-					+ URLEncoder.encode("level", "UTF-8")+"="+URLEncoder.encode( (result.level+""), "UTF-8")
-					+ URLEncoder.encode("latitude", "UTF-8")+"="+URLEncoder.encode(result.latitude+"", "UTF-8")
-					+ URLEncoder.encode("longitude", "UTF-8")+"="+URLEncoder.encode( (result.longitude+""), "UTF-8");
+			return  URLEncoder.encode("entry.0.single", "UTF-8")+"="+URLEncoder.encode(result.BSSID, "UTF-8")+"&"
+					+ URLEncoder.encode("entry.1.single", "UTF-8")+"="+URLEncoder.encode(result.capabilities, "UTF-8")+"&"
+					+ URLEncoder.encode("entry.2.single", "UTF-8")+"="+URLEncoder.encode(result.SSID, "UTF-8")+"&"
+					+ URLEncoder.encode("entry.3.single", "UTF-8")+"="+URLEncoder.encode(result.frequency+"", "UTF-8")+"&"
+					+ URLEncoder.encode("entry.4.single", "UTF-8")+"="+URLEncoder.encode( (result.level+""), "UTF-8")+"&"
+					+ URLEncoder.encode("entry.5.single", "UTF-8")+"="+URLEncoder.encode(result.latitude+"", "UTF-8")+"&"
+					+ URLEncoder.encode("entry.6.single", "UTF-8")+"="+URLEncoder.encode( (result.longitude+""), "UTF-8")+"&"
+					+ URLEncoder.encode("pageNumber", "UTF-8")+"="+URLEncoder.encode("0", "UTF-8")+"&"
+					+ URLEncoder.encode("backupCache", "UTF-8")+"="+URLEncoder.encode("", "UTF-8")+"&"
+					+ URLEncoder.encode("submit", "UTF-8")+"="+URLEncoder.encode("Submit", "UTF-8");
 		} catch (UnsupportedEncodingException e) {
+			System.out.println(e);
 			return "";
 		}
 	}
