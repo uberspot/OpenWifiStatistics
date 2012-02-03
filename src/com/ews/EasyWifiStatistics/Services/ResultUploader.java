@@ -1,114 +1,85 @@
 package com.ews.EasyWifiStatistics.Services;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 public class ResultUploader {
+	private HttpClient httpclient;
+	private String url;
 	
-    public static class HostNameVerifierAllowAll implements HostnameVerifier {
-        public boolean verify(String hostname, SSLSession session) {
-            return true;
-        }
+	public ResultUploader(String url){
+		httpclient = new DefaultHttpClient();
+		this.url = url;
 	}
 	
-	private URL url = null;
-	
-	public void setURL(String url) throws MalformedURLException {
-		this.url = new URL(url);
+	public void setURL(String url) {
+		this.url = url;
 	}
 	
 	/** Sends the given result to the URL via http connection
-	 * @param verifier
 	 * @param result
 	 * @return true if the upload was successful, false if the url was null or an IOException occurred
 	 */
 	public boolean send(EScanResult result) {
 			if(url==null)
 				return false;
-
-			
-        	HttpURLConnection connection;
-			try {
-				connection = (HttpURLConnection) url.openConnection();
-	            connection.setDoOutput(true);
-	            connection.setRequestMethod("POST");
-	            
-	            String content = ResultUploader.resultToString(result);
-	            System.out.println("Uploading " + content);
-	            connection.setFixedLengthStreamingMode(content.getBytes().length);
-	
-	            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-	            out.write(content);
-	            out.flush();
-	            out.close();
-	            connection.disconnect();
-			} catch (IOException e) {
+			try {	            
+	            List<NameValuePair> nameValuePairs = resultToNVPairs(result);
+	            HttpPost httppost = new HttpPost(url);
+	            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+	            HttpResponse response = httpclient.execute(httppost);
+	            if(response.getStatusLine().getStatusCode() != 200)
+	            	return false;
+	            //consume answer to avoid errors
+	            HttpEntity entity = response.getEntity();
+	            entity.consumeContent();
+			} catch (Exception e) {
 				System.out.println(e);
 				return false;
 			}
 			return true;
 	}
 	
-	/** Sends the given result to the URL via https connection
-	 * @param verifier
-	 * @param result
-	 * @return true if the upload was successful, false if the url was null or an IOException occurred
-	 */
-	public boolean sendHTTPS(HostnameVerifier verifier, EScanResult result) {
-			if(url==null)
-				return false;
-			
-        	HttpsURLConnection connection;
-			try {
-				connection = (HttpsURLConnection) url.openConnection();
-	            connection.setHostnameVerifier(verifier);
-	            connection.setDoOutput(true);
-	            connection.setRequestMethod("POST");
-	            
-	            String content = ResultUploader.resultToString(result);
-	            System.out.println("Uploading " + content);
-	            connection.setFixedLengthStreamingMode(content.getBytes().length);
-	
-	            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-	            out.write(content);
-	            out.flush();
-	            out.close();
-	            connection.disconnect();
-			} catch (IOException e) {
-				System.out.println(e);
-				return false;
-			}
-            return true;
-	}
-	
+	public static List<NameValuePair> resultToNVPairs(EScanResult result) {
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		nameValuePairs.add(new BasicNameValuePair("bssid", result.BSSID));
+		nameValuePairs.add(new BasicNameValuePair("capabilities", result.capabilities));
+		nameValuePairs.add(new BasicNameValuePair("ssid", result.SSID));
+		nameValuePairs.add(new BasicNameValuePair("frequency", Integer.toString(result.frequency) ));
+		nameValuePairs.add(new BasicNameValuePair("level", Integer.toString(result.level) ));
+		nameValuePairs.add(new BasicNameValuePair("provider", "wifi" ));
+		nameValuePairs.add(new BasicNameValuePair("longitude", result.longitude+"" ));
+		nameValuePairs.add(new BasicNameValuePair("latitude", result.latitude+"" ));
+		nameValuePairs.add(new BasicNameValuePair("submit", "submit" ));
+		return nameValuePairs;
+	} 
+		
 	/** 
 	 * @param result
 	 * @return a UTF-8 String representation of the given result 
 	 */
 	public static String resultToString(EScanResult result) {
 		try {
-			return  URLEncoder.encode("entry.0.single", "UTF-8")+"="+URLEncoder.encode(result.BSSID, "UTF-8")+"&"
-					+ URLEncoder.encode("entry.1.single", "UTF-8")+"="+URLEncoder.encode(result.capabilities, "UTF-8")+"&"
-					+ URLEncoder.encode("entry.2.single", "UTF-8")+"="+URLEncoder.encode(result.SSID, "UTF-8")+"&"
-					+ URLEncoder.encode("entry.3.single", "UTF-8")+"="+URLEncoder.encode(result.frequency+"", "UTF-8")+"&"
-					+ URLEncoder.encode("entry.4.single", "UTF-8")+"="+URLEncoder.encode( (result.level+""), "UTF-8")+"&"
-					+ URLEncoder.encode("entry.5.single", "UTF-8")+"="+URLEncoder.encode(result.latitude+"", "UTF-8")+"&"
-					+ URLEncoder.encode("entry.6.single", "UTF-8")+"="+URLEncoder.encode( (result.longitude+""), "UTF-8")+"&"
-					+ URLEncoder.encode("pageNumber", "UTF-8")+"="+URLEncoder.encode("0", "UTF-8")+"&"
-					+ URLEncoder.encode("backupCache", "UTF-8")+"="+URLEncoder.encode("", "UTF-8")+"&"
-					+ URLEncoder.encode("submit", "UTF-8")+"="+URLEncoder.encode("Submit", "UTF-8");
-		} catch (UnsupportedEncodingException e) {
+			return  URLEncoder.encode("BSSID", "UTF-8")+"="+URLEncoder.encode(result.BSSID, "UTF-8")+"&"
+					+ URLEncoder.encode("SSID", "UTF-8")+"="+URLEncoder.encode(result.capabilities, "UTF-8")+"&"
+					+ URLEncoder.encode("capabilities", "UTF-8")+"="+URLEncoder.encode(result.SSID, "UTF-8")+"&"
+					+ URLEncoder.encode("frequency", "UTF-8")+"="+URLEncoder.encode(result.frequency+"", "UTF-8")+"&"
+					+ URLEncoder.encode("level", "UTF-8")+"="+URLEncoder.encode( (result.level+""), "UTF-8")+"&"
+					+ URLEncoder.encode("provider", "UTF-8")+"="+URLEncoder.encode("wifi", "UTF-8")+"&"
+					+ URLEncoder.encode("latitude", "UTF-8")+"="+URLEncoder.encode(result.latitude+"", "UTF-8")+"&"
+					+ URLEncoder.encode("longtitude", "UTF-8")+"="+URLEncoder.encode( (result.longitude+""), "UTF-8")+"&"
+					+ URLEncoder.encode("submit", "UTF-8")+"="+URLEncoder.encode("submit", "UTF-8");
+		} catch (Exception e) {
 			System.out.println(e);
 			return "";
 		}
@@ -123,19 +94,6 @@ public class ResultUploader {
 		ArrayList<Boolean> validUploads = new ArrayList<Boolean>();
 		for(EScanResult result : results) {
 			validUploads.add( send(result) );
-		}
-		return validUploads;
-	}
-	
-	/** Sends all the given results via https
-	 * @param results
-	 * @return an array of boolean indicating the status of each results' upload. 
-	 * True if it was uploaded successfully, false otherwise.
-	 */
-	public ArrayList<Boolean> sendAllHTTPS(List<EScanResult> results) {
-		ArrayList<Boolean> validUploads = new ArrayList<Boolean>();
-		for(EScanResult result : results) {
-			validUploads.add( sendHTTPS(new HostNameVerifierAllowAll(), result) );
 		}
 		return validUploads;
 	}

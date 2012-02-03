@@ -1,6 +1,5 @@
 package com.ews.EasyWifiStatistics.Services;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -76,7 +75,7 @@ public class MonitoringService extends Service {
 	private WifiManager wifi = null;
 	
 	// 8 seconds between scans, 5 minutes between form uploads, 2 minutes between location updates
-	private static final int scanTimeout = 10000, uploadTimeout = 300000, locationTimeout = 120000; 
+	private static final int scanTimeout = 30000, uploadTimeout = 300000, locationTimeout = 120000; 
 	
 	/** Listens for results of wifi scans */
 	BroadcastReceiver receiver;
@@ -137,12 +136,7 @@ public class MonitoringService extends Service {
 		latitude = LocationFinder.defaultLatitude;
     	longitude = LocationFinder.defaultLongitude;
 		
-		formUploader = new ResultUploader();
-		try {
-			formUploader.setURL("https://docs.google.com/spreadsheet/embeddedform?formkey=dG03djh0bHR5RFNURk4zRW5QQjNjb2c6MQ");
-		} catch (MalformedURLException e) {
-			System.out.println("Malformed URL: " + e);
-		}
+		formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
 		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		
@@ -152,8 +146,8 @@ public class MonitoringService extends Service {
 	
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
-	    timer.schedule( new ScanTask() , scanTimeout, scanTimeout);
-	    timer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
+	    timer.schedule( new ScanTask() , 10000, scanTimeout);
+	    timer.schedule( new UploadResultsTask() , 20000, uploadTimeout);
 	    timer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
 	    
 		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
@@ -191,7 +185,7 @@ public class MonitoringService extends Service {
 	public void uploadResults() {
 		for(int i = 0; i < scanResults.size(); i++){
 			EScanResult result = scanResults.get(i);
-			if( formUploader.sendHTTPS(new ResultUploader.HostNameVerifierAllowAll(), result) ) { 
+			if( formUploader.send(result) ) { 
 				scanResults.remove(i--); 
 			}
     	}
