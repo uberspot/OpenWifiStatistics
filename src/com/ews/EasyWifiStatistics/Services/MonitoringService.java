@@ -40,9 +40,18 @@ public class MonitoringService extends Service {
         			@SuppressWarnings("unchecked")
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
-        			for(ScanResult result : results)
-        				scanResults.add(new EScanResult(result, latitude, longitude));
-        			
+        			for(ScanResult result : results) {
+        				EScanResult temp = new EScanResult(result, 0, 0);
+        				if(scanResults.contains(temp)) {
+        					int indexOfOldRecord = scanResults.indexOf(temp);
+        					if(scanResults.get(indexOfOldRecord).level <= result.level) {
+	        					scanResults.remove(indexOfOldRecord);
+	        					scanResults.add(new EScanResult(result, latitude, longitude));
+        					}
+        				} else {
+        					scanResults.add(new EScanResult(result, latitude, longitude));
+        				}
+        			}
         			/* save scan results (either internally or in a database[better]) to preserve in case the service stops
         			 * or possibly save the results in the onDestroy() function 
 	    			*/
