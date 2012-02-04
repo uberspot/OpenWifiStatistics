@@ -58,16 +58,6 @@ public class WifiMapPage extends MapActivity {
         } else {
         	Globals.service.setUIHandler(handler);
         	
-	        if(!Globals.service.isProviderDisabled()) {
-	        	AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-	            alertDialog.setTitle("Error");
-	            alertDialog.setMessage("No location provider found! Please enable gps and/or wifi location.");
-	            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-	              public void onClick(DialogInterface dialog, int which) {
-	                return;
-	            } });
-	            alertDialog.show();
-	        }
 	        mapController.setCenter(new GeoPoint((int) (Globals.service.getLatitude()* 1E6), (int) (Globals.service.getLongitude()* 1E6)));
 	    }
         

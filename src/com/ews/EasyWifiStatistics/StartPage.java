@@ -23,7 +23,7 @@ public class StartPage extends Activity {
     @Override
 	public void onDestroy() {
     	if(monitoringStarted){ //temporary
-    		stopService(new Intent(StartPage.this, MonitoringService.class));
+    	//	stopService(new Intent(StartPage.this, MonitoringService.class));
     	}
     	super.onDestroy();
 		this.finish();

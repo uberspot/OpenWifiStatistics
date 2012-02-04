@@ -1,8 +1,13 @@
 package Utils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -62,6 +67,50 @@ public class StorageUtils extends ContextWrapper {
 		} catch (FileNotFoundException e) {
 			return null;
 		}
+	}
+	
+	/** Returns a FileOutputStream to the file in the internal storage with the given name.
+	 * @param fileName the name of the file
+	 * @return a FileOutputStream to the file
+	 */
+	public FileOutputStream getInnerFileOutputStream(String fileName){
+		try{
+			if(fileExists(fileName))
+				return openFileOutput(fileName, Context.MODE_PRIVATE);
+			return null;
+		} catch (FileNotFoundException e) {
+			return null;
+		}
+	}
+	
+	public boolean saveObjectToInnerStorage(Object obj,  String fileName) {
+		ObjectOutputStream output = null;
+		try {
+			output = new ObjectOutputStream( new BufferedOutputStream( openFileOutput(fileName, Context.MODE_PRIVATE) ) );
+			output.writeObject(obj);
+			output.flush();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(output!=null)
+				try { output.close(); } catch (IOException e) { }
+		}
+		return false;
+	}
+	
+	public Object loadObjectFromInnerStorage(String fileName) {
+		Object obj = null; ObjectInputStream input = null;
+		try {
+			input = new ObjectInputStream ( new BufferedInputStream( openFileInput(fileName) ) );
+			obj = input.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(input!=null)
+				try { input.close(); } catch (IOException e) { }
+		}
+		return obj;
 	}
 	
 	public boolean savePreference(String prefName, String valueName, String value){

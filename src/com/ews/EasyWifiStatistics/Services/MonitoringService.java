@@ -7,6 +7,7 @@ import java.util.TimerTask;
 
 import com.ews.EasyWifiStatistics.Globals;
 
+import Utils.StorageUtils;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -80,11 +81,13 @@ public class MonitoringService extends Service {
 	
 	private ResultUploader formUploader;
 	
+	private StorageUtils storageUtils;
+	
 	/** Provides access to android's wifi info */
 	private WifiManager wifi = null;
 	
-	// 8 seconds between scans, 5 minutes between form uploads, 2 minutes between location updates
-	private static final int scanTimeout = 30000, uploadTimeout = 300000, locationTimeout = 120000; 
+	// 45 seconds between scans, 7 minutes between form uploads, 2 minutes between location updates
+	private static final int scanTimeout = 45000, uploadTimeout = 420000, locationTimeout = 120000; 
 	
 	/** Listens for results of wifi scans */
 	BroadcastReceiver receiver;
@@ -128,15 +131,21 @@ public class MonitoringService extends Service {
 	@Override
 	public IBinder onBind(Intent arg0) { return null; }
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate() { 
 		super.onCreate();
 		
 		Globals.service = this;
 		
-		//Load saved/serialized EScanResults in case they don't get uploaded in time
-		scanResults = new ArrayList<EScanResult>();
+		//Load previous scan results possibly saved in inner storage
+		storageUtils = new StorageUtils(getApplicationContext());
 		
+		scanResults = (ArrayList<EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
+		
+		if(scanResults==null)
+			scanResults = new ArrayList<EScanResult>();
+
 		timer = new Timer();
 		
 		//start listening for current location
@@ -169,7 +178,7 @@ public class MonitoringService extends Service {
 		timer.cancel();
 		if(locationFinder.startedListening)
 			locationFinder.stopListening();
-		//Save serializable EScanResults
+		storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
 		Globals.service = null;
 		Toast.makeText(this, "Service destroyed...", Toast.LENGTH_SHORT).show();
 	}
