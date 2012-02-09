@@ -13,6 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 public class MonitoringService extends Service {
@@ -86,8 +88,7 @@ public class MonitoringService extends Service {
 	/** Provides access to android's wifi info */
 	private WifiManager wifi = null;
 	
-	// 45 seconds between scans, 7 minutes between form uploads, 2 minutes between location updates
-	private static final int scanTimeout = 45000, uploadTimeout = 420000, locationTimeout = 120000; 
+	private static int scanTimeout, uploadTimeout, locationTimeout, locationTaskTTL; 
 	
 	/** Listens for results of wifi scans */
 	BroadcastReceiver receiver;
@@ -141,6 +142,8 @@ public class MonitoringService extends Service {
 		//Load previous scan results possibly saved in inner storage
 		storageUtils = new StorageUtils(getApplicationContext());
 		
+		loadPreferences();
+		
 		scanResults = (ArrayList<EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
 		
 		if(scanResults==null)
@@ -164,11 +167,33 @@ public class MonitoringService extends Service {
 	
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
-	    timer.schedule( new ScanTask() , 10000, scanTimeout);
-	    timer.schedule( new UploadResultsTask() , 20000, uploadTimeout);
+	    timer.schedule( new ScanTask() , 5000, scanTimeout);
+	    timer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
 	    timer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
 	    
 		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
+	}
+	
+	private void loadPreferences() {
+		 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		 try { 
+			 scanTimeout = Integer.parseInt(prefs.getString("wScanPref", "30")) * 1000;
+			 uploadTimeout = Integer.parseInt(prefs.getString("uploadPref", "420")) * 1000;
+			 locationTimeout = Integer.parseInt(prefs.getString("lScanPref", "120")) * 1000;
+			 locationTaskTTL = Integer.parseInt(prefs.getString("lscan_ttl", "60")) * 1000;
+		 } catch (NumberFormatException e) {
+			 Toast.makeText(this,"Error in loading settings, using defaults", Toast.LENGTH_SHORT).show();
+			 loadDefaults();
+		 }
+	}
+	
+	/** Sets the time between wifi scans to 30 seconds, between uploads to 5 minutes, 
+	 * between location scans to 2 minutes and the time to scan for location changes to 1 minute. */
+	private static void loadDefaults() {
+		scanTimeout = 30000; 
+		uploadTimeout = 420000;
+		locationTimeout = 120000;
+		locationTaskTTL = 60000;
 	}
 	
 	@Override
@@ -241,7 +266,7 @@ public class MonitoringService extends Service {
     	public GetLocationTask(Handler handler) { this.handler = handler; }
         @Override public void run() {
         	handler.sendEmptyMessage(1);
-        	try { Thread.sleep(60000); } catch (InterruptedException e) { }
+        	try { Thread.sleep(locationTaskTTL); } catch (InterruptedException e) { }
         	handler.sendEmptyMessage(2);
         }
     }

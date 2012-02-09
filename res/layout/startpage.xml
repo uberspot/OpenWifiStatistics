@@ -16,12 +16,12 @@
 		        android:gravity="center_vertical|center_horizontal"
 		        android:text="@string/app_name" />
 		
-		    <ImageView
+		    <!--<ImageView
 		        android:contentDescription="@string/app_name"
 		        android:id="@+id/ewsIcon"
 		        android:layout_width="match_parent"
 		        android:layout_height="190dp"
-		        android:src="@drawable/ic_launcher" />
+		        android:src="@drawable/ic_launcher" /> -->
 		
 		    <Button
 		        android:id="@+id/toggleMonitoring"
@@ -29,7 +29,14 @@
 		        android:layout_height="wrap_content"
 		        android:onClick="toggleMonitoring"
 		        android:text="@string/start_monitoring" />
-		
+			
+		    <Button
+		        android:id="@+id/map"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:onClick="goToMap"
+		        android:text="@string/map" />
+		    
 		    <Button
 		        android:id="@+id/showStatistics"
 		        android:layout_width="match_parent"
@@ -50,12 +57,5 @@
 		        android:onClick="goToSettings"
 		        android:text="@string/settings" />
 		    
-		    <Button
-		        android:id="@+id/map"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:onClick="goToMap"
-		        android:text="@string/map" />
-		
 		</LinearLayout>
 </ScrollView>

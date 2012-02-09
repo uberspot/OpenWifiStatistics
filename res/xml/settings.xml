@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        <PreferenceCategory
+                android:title="Settings">
+        <EditTextPreference
+                android:name="Wifi Scan Interval"
+                android:summary="Interval between wifi scans(in seconds)"
+                android:defaultValue="30"
+                android:title="@string/wscan_interval"
+                android:key="wScanPref"
+                android:inputType="phone" />
+        <EditTextPreference
+                android:name="Upload Interval"
+                android:summary="Interval between data uploads(in seconds)"
+                android:defaultValue="420"
+                android:title="@string/upload_interval"
+                android:key="uploadPref"
+                android:inputType="phone" />
+        <EditTextPreference
+                android:name="Location Scan Interval"
+                android:summary="Interval between location scans(in seconds)"
+                android:defaultValue="120"
+                android:title="@string/lscan_interval"
+                android:key="lScanPref"
+                android:inputType="phone" />
+        <EditTextPreference
+                android:name="Location scan time"
+                android:summary="Time in which location is scanned(in seconds)"
+                android:defaultValue="60"
+                android:title="@string/location_ttl"
+                android:key="lscan_ttl"
+                android:inputType="phone" />
+        </PreferenceCategory>
+</PreferenceScreen>

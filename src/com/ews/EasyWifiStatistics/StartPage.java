@@ -22,31 +22,24 @@ public class StartPage extends Activity {
     
     @Override
 	public void onDestroy() {
-    	if(monitoringStarted){ //temporary
-    	//	stopService(new Intent(StartPage.this, MonitoringService.class));
-    	}
     	super.onDestroy();
 		this.finish();
 	}
     
     public void goToMeasureConnection(View v) {
-    	Intent i = new Intent(this, MeasureConnectionPage.class);
-        startActivity(i);
+        startActivity(new Intent(this, MeasureConnectionPage.class));
     }
     
     public void goToStatistics(View v) {
-    	Intent i = new Intent(this, StatisticsPage.class);
-        startActivity(i);
+        startActivity(new Intent(this, StatisticsPage.class));
     }
     
     public void goToSettings(View v) {
-    	Intent i = new Intent(this, SettingsPage.class);
-        startActivity(i); 
+        startActivity(new Intent(this, SettingsPage.class)); 
     }
     
     public void goToMap(View v) {
-    	Intent i = new Intent(this, WifiMapPage.class);
-        startActivity(i);
+        startActivity(new Intent(this, WifiMapPage.class));
     }
     
     public void toggleMonitoring(View v) {
