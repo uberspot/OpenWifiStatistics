@@ -44,15 +44,12 @@ public class MonitoringService extends Service {
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
         			for(ScanResult result : results) {
-        				EScanResult temp = new EScanResult(result, 0, 0);
-        				if(scanResults.contains(temp)) {
-        					int indexOfOldRecord = scanResults.indexOf(temp);
-        					if(scanResults.get(indexOfOldRecord).level <= result.level) {
-	        					scanResults.remove(indexOfOldRecord);
-	        					scanResults.add(new EScanResult(result, latitude, longitude));
-        					}
-        				} else {
+        				int indexOfOldRecord = scanResults.indexOf(new EScanResult(result, 0, 0));
+    					if(indexOfOldRecord!=-1 && scanResults.get(indexOfOldRecord).level <= result.level) {
+        					scanResults.remove(indexOfOldRecord);
         					scanResults.add(new EScanResult(result, latitude, longitude));
+    					} else {
+    						scanResults.add(new EScanResult(result, latitude, longitude));
         				}
         			}
         			/* save scan results (either internally or in a database[better]) to preserve in case the service stops

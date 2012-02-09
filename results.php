@@ -13,7 +13,7 @@ $database = "le dbname";
     $result = mysql_query("SELECT * FROM `scan_results`");
     
     while($row = mysql_fetch_array($result)) {
-  	echo $row['bssid'] . " " . $row['ssid'] . " " . $row['capabilities'] . " " . $row['level'] 
+  	echo $row['timestamp'] . " " . $row['bssid'] . " " . $row['ssid'] . " " . $row['capabilities'] . " " . $row['level'] 
         . " " . $row['frequency'] . " " . $row['provider'] . " " . $row['latitude'] . " " . $row['longitude'];
   	echo "<br />";
     }
