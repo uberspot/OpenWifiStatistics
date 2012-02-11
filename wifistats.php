@@ -30,7 +30,9 @@ if(isset($_POST['submit'])) {
     if( empty($BSSID) || empty($frequency) 
         || empty($level) || empty($latitude) || empty($longitude)) 
         { exit; }
-
+    if( empty($capabilities) ) {
+        $capabilities = "[open]";
+    }
     mysql_connect($host, $user, $password);
 
     mysql_select_db($database) or die("Unable to select database");
