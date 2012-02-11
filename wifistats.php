@@ -27,8 +27,8 @@ if(isset($_POST['submit'])) {
     $latitude = sanitizeString($_POST['latitude']);
     $longitude = sanitizeString($_POST['longitude']);
 
-    if( empty($BSSID) || empty($SSID) || empty($capabilities) || empty($frequency) 
-        || empty($level) || empty($provider) || empty($latitude) || empty($longitude)) 
+    if( empty($BSSID) || empty($frequency) 
+        || empty($level) || empty($latitude) || empty($longitude)) 
         { exit; }
 
     mysql_connect($host, $user, $password);

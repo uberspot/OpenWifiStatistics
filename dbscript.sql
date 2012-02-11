@@ -7,7 +7,7 @@ CREATE TABLE `scan_results` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `bssid` VARCHAR(50) NOT NULL,
   `ssid` VARCHAR(50) NOT NULL,
-  `capabilities` VARCHAR(30) NOT NULL,
+  `capabilities` VARCHAR(80) NOT NULL,
   `frequency` INTEGER NOT NULL,
   `level` INTEGER NOT NULL,
   `provider` VARCHAR(10) NOT NULL,
