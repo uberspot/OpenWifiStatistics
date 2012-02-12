@@ -1,4 +1,6 @@
+html { height:100%; }
 body {
+	height:100%;
 	margin:.5em auto; 
 	padding:0px;
 	text-align: center;
