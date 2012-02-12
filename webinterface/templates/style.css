@@ -1,0 +1,130 @@
+html { height: 100% }
+
+body {
+	/* http://bluerobot.com/web/css/center1.html */
+	margin:0px 0px; 
+	padding:0px; /* Need to set body margin and padding to get consistency between browsers. */
+	text-align: center;
+}
+
+#menu-box {
+	position: fixed;
+	width: 100%;
+}
+
+#menu {
+	position: relative;
+	height: 60px;
+	width: 90%;
+	background-color: #cccccc;
+	font-size: 3em;
+    -moz-border-radius:20px;
+    -webkit-border-radius:20px;
+    -khtml-border-radius:20px;
+    border-radius:20px;
+	z-index: 5;
+	margin:0px auto; /* Right and left margin widths set to "auto" */
+	text-align:justify; /* Counteract to IE5/Win Hack */
+}
+
+a {
+	text-decoration:none;
+	color: black;
+}
+
+a.abox {
+	color: black;
+}
+
+a.abox:hover {
+	color: white;
+}
+
+.abox {
+	vertical-align: top;
+}
+
+#content {
+	padding:80px 0px 0px 0px;
+	margin:0px auto; /* Right and left margin widths set to "auto" */
+	text-align:justify; /* Counteract to IE5/Win Hack */
+	position: relative;
+	width:80%;
+}
+
+#map {
+	position: relative;
+	height: 90%; 
+	padding: 80px 0px 0px 0px;
+	text-align:justify;
+	margin:0px auto;
+}
+
+.charts_container{
+	overflow: auto;
+	width: 900px;
+	height: 420px;
+	margin: 10px auto;
+}
+
+.chart_container_centered{
+	text-align: center;
+	width: 900px;
+	height: 420px;
+	margin: 10px auto;
+}
+
+.chart_container{
+	width: 400px;
+	height: 400px;
+	margin: 0px 25px;
+	float: left;
+}
+
+#vendor0 {
+	color: #006CFF;
+}
+
+#vendor1 {
+	color: #FF6600;
+}
+
+#vendor2 {
+	color: #34A038;
+}
+
+#vendor3 {
+	color: #945D59;
+}
+
+#vendor4 {
+	color: #93BBF4;
+}
+
+#vendor5 {
+	color: #F493B8;
+}
+
+#vendor8 {
+	color: #CCC;
+}
+
+#vendor7 {
+	color: #f123cc;
+}
+
+#vendor6 {
+	color: #e3e123;
+}
+
+#vendor9 {
+	color: red;
+}
+
+.bggrey {
+	background-color: #CCC;
+}
+
+.vendors {
+	font-size: 1.75em;
+}
