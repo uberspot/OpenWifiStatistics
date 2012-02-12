@@ -8,11 +8,11 @@ require_once('templates/template.php');
     
     $order=0;
     if (isset($_GET['order'])) {
-		$order = $_GET['order'];
-	}
+        $order = $_GET['order'];
+    }
     
 	
-	/* Presentation */
+    /* Presentation */
 	    
     echo Template::header("Results");
     
@@ -53,7 +53,7 @@ require_once('templates/template.php');
     $flag=true;
     foreach($results->getResults($order) as $result) {
 			if($flag) {
-				echo "<tr class='bggrey'>";
+				echo "<tr class='bg'>";
 				$flag=false;
 			} else {
 				echo "<tr>";
@@ -66,10 +66,10 @@ require_once('templates/template.php');
 			echo '<td>'.$result->getFrequency().'</td>';
 			echo '<td>'.$result->getLevel().'</td>';
 			echo "</tr>";
-	}
-	echo "</table>";
+    }
+    echo "</table>";
 	
-	echo Template::contentEnd();
-	echo Template::footer();
+    echo Template::contentEnd();
+    echo Template::footer();
     
 ?>

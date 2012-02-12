@@ -11,11 +11,11 @@ require_once('vendors.php');
 	$results = new statsModel();
 	$stats = $results->getStats();
 	echo "<h1>General Info</h1><br/>";
-	echo "<strong>Total scans:</strong>".$stats['total']."<br/>";
-	echo "<strong>Distinct wifis:</strong>".$stats['totalwifi']."<br/>";
+	echo "<strong>Total scans: </strong>".$stats['total'];
+	echo " <strong> Distinct wifis: </strong>".$stats['totalwifi']."<hr/>";
 	echo "<h1>Frequency Statistics</h1><br/>";
 	echo '
-		<div class="chart_frequency">
+		<div class="charts_container">
 
             <canvas id="frequencyCanvas" width="600" height="400">
                 Your web-browser does not support the HTML 5 canvas element.
@@ -47,10 +47,10 @@ require_once('vendors.php');
             freq.draw();
 	</script>';
 	
-	echo "<h1>Access Point Vendors</h1><br/>";
+	echo "<hr><h1>Access Point Vendors</h1><br/>";
 	
 	echo '
-		<div class="chart_vendors">
+		<div class="charts_container">
 
             <canvas id="vendorsCanvas" width="600" height="600">
                 Your web-browser does not support the HTML 5 canvas element.
@@ -105,12 +105,12 @@ require_once('vendors.php');
 		echo "<tr id='vendor$i' class='vendors'><td>$vendor</td><td>$vendorinfo[$vendor]</td><td>$count</td></tr>";
 		$i++;
 	}
-	echo '</table>';
+	echo '</table><hr/>';
 	
 	echo "<h1>Security</h1><br/>";
 	
 	echo '
-		<div class="chart_frequency">
+		<div class="charts_container">
 
             <canvas id="secCanvas" width="800" height="800">
                 Your web-browser does not support the HTML 5 canvas element.
@@ -143,7 +143,7 @@ require_once('vendors.php');
             sec.draw();
 	</script>';
 	
-	echo "<h2>Pie Free vs Protected</h2><br/>";
+	echo "<hr/><h2>Pie Free vs Protected</h2><br/>";
 	
 	echo "<h2>% unsecure networks</h2><br/>";
 	

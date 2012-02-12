@@ -58,8 +58,6 @@ class statModel {
 	
 	function getLongitude() {
 		return $this->longitude;
-	}
-	
+	}	
 }
-
 ?>

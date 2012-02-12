@@ -17,13 +17,11 @@ class Template {
 		$script
 	</head>
 	<body>
-	<div id="menu-box">
 	<div id="menu">
-		<img src="templates/Wifi_logo.png" alt="logo" height="60" />
+		<img src="templates/Wifi_logo.png" alt="logo" height="60px" />
 		<a href="results.php" class="abox">Results</a>
 		<a href="map.php" class="abox">Map</a>
 		<a href="stats.php" class="abox">Stats</a>
-	</div>
 	</div>
 HEAD;
 		return $head;

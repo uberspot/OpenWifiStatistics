@@ -5,13 +5,11 @@ require_once('statModel.php');
 require_once('templates/template.php');
 require_once('configuration.php');
 
-	$results = new statsModel();
+    $results = new statsModel();
 
-	/* Presentation */
+    /* Presentation */
 	
-	/**
-	 * This is a little messy, maybe move it to a separate .js
-	 */
+    /** This is a little messy, maybe move it to a separate .js */
 	  	    
     $script = '<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <script src="js/markerclusterer.js"></script>
