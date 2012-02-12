@@ -14,7 +14,7 @@ require_once('configuration.php');
     $script = '<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <script src="js/markerclusterer.js"></script>
     <style type="text/css">
-      body { height: 100%; margin: 0; padding: 0 }
+      body { height: 100%; padding: 0 }
       #map_canvas { height: 100% }
     </style>
     <script type="text/javascript"

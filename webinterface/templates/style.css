@@ -10,6 +10,7 @@ body {
 	background-color: #5E9AC1;
 	color:white;
 	font-size: 3em;
+	border:2px ridge white;
 	-moz-border-radius:20px;
 	-webkit-border-radius:20px;
 	khtml-border-radius:20px;
