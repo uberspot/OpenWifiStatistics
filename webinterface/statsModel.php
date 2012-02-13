@@ -50,13 +50,13 @@ class statsModel {
 		$row = mysql_fetch_array($result);
 		$stats['totalwifi'] = $row[0];
 		$frequencies = array();
-		$result = mysql_query("SELECT `frequency`,COUNT(*) FROM `scan_results` GROUP BY `frequency` ORDER BY COUNT(*) DESC");
+		$result = mysql_query("SELECT `frequency`,COUNT(*) FROM (SELECT * FROM `scan_results` GROUP BY `bssid`) AS subquery GROUP BY `frequency` ORDER BY COUNT(*) DESC");
 		while($row = mysql_fetch_array($result)) {
 			$frequencies[$row[0]] = $row[1];
 		}
 		$stats['frequency'] = $frequencies;		
 		$capabilities = array();
-		$result = mysql_query("SELECT `capabilities`,COUNT(*) FROM `scan_results` GROUP BY `capabilities` ORDER BY COUNT(*) DESC");
+		$result = mysql_query("SELECT `capabilities`,COUNT(*) FROM (SELECT * FROM `scan_results` GROUP BY `bssid`) AS subquery GROUP BY `capabilities` ORDER BY COUNT(*) DESC");
 		while($row = mysql_fetch_array($result)) {
 			$capabilities[$row[0]] = $row[1];
 		}
