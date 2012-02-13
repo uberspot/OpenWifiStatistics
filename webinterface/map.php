@@ -34,10 +34,13 @@ require_once('configuration.php');
      $longtitude = 0;
      foreach($results->getResults(1) as $result) {
 		 $script .= '
-        markers.push(new google.maps.Marker({
+        markers.push(marker = new google.maps.Marker({
 	position: new google.maps.LatLng('.$result->getLatitude().', '.$result->getLongitude().'), 
-        title:"<b>'.$result->getSsid().'</b> Power:'.$result->getLevel().' Security:'.$result->getCapabilities().'"
-		}));';
+        title:"<strong>'.$result->getSsid().'</strong> Power:'.$result->getLevel().' Security:'.$result->getCapabilities().'"
+		}));
+		
+		attachMessage(marker);
+		';
 	}
 	$script .= '
 		var markerClusterer = new MarkerClusterer(map, markers);
@@ -53,20 +56,32 @@ require_once('configuration.php');
 			//Get markers
 			var markers = cluster.getMarkers();
 
-			var titles = "";
-			//Get all the titles
+			var content = "";
+			//Get all the titles + content
 			for(var i = 0; i < markers.length; i++) {
-				titles += markers[i].getTitle() + "</br>";
+				content += markers[i].getTitle()+"<br/>";
 			}
 			//----
 
 
 			var infowindow = new google.maps.InfoWindow();
 			infowindow.close();
-			infowindow.setContent(titles); //set infowindow content to titles
+			infowindow.setContent(content); //set infowindow content to titles
 			infowindow.open(map, info);
 
 		});
+		
+		function attachMessage(marker) {
+		  var message = ["This","is","the","secret","message"];
+		  var infowindow = new google.maps.InfoWindow(
+			  { content: marker.getTitle(),
+				size: new google.maps.Size(50,50)
+			  });
+		  google.maps.event.addListener(marker, \'click\', function() {
+			infowindow.open(map,marker);
+		  });
+		}
+			
 		  }
     </script>';
 	
