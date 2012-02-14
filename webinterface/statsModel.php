@@ -68,7 +68,6 @@ class statsModel {
 		}
 		$stats['macprefixes'] = $macprefixes;
 		$result = mysql_query("SELECT COUNT(DISTINCT `bssid`) FROM  `scan_results` WHERE  `capabilities` =  '[open]'");
-		var_dump($result);
 		$row = mysql_fetch_array($result);
 		$stats['totalopen'] = $row[0];
 		mysql_close();
