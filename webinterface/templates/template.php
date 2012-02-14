@@ -18,7 +18,7 @@ class Template {
 	</head>
 	<body>
 	<div id="menu">
-		<img src="templates/Wifi_logo.png" alt="logo" height="60px" />
+		<img src="templates/Wifi_logo.png" alt="logo" height="60" />
 		<a href="results.php" class="abox">Results</a>
 		<a href="map.php" class="abox">Map</a>
 		<a href="stats.php" class="abox">Stats</a>
