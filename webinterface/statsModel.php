@@ -11,7 +11,7 @@ class statsModel {
 	public function getResults($mode=0) {
 		$results = array();
 		
-		mysql_connect($GLOBALS['host'], $GLOBALS['user'], $GLOBALS['password']);
+		mysql_connect($GLOBALS['host'], $GLOBALS['user']);
 
 		mysql_select_db($GLOBALS['database']) or die("Unable to select database");
 
@@ -41,7 +41,7 @@ class statsModel {
 		
 		$stats = array();
 		
-		mysql_connect($GLOBALS['host'], $GLOBALS['user'], $GLOBALS['password']);
+		mysql_connect($GLOBALS['host'], $GLOBALS['user']);
 		mysql_select_db($GLOBALS['database']) or die("Unable to select database");
 		$result = mysql_query("SELECT COUNT(*) FROM `scan_results`");
 		$row = mysql_fetch_array($result);
@@ -67,6 +67,10 @@ class statsModel {
 			$macprefixes[$row[0]] = $row[1];
 		}
 		$stats['macprefixes'] = $macprefixes;
+		$result = mysql_query("SELECT COUNT(DISTINCT `bssid`) FROM  `scan_results` WHERE  `capabilities` =  '[open]'");
+		var_dump($result);
+		$row = mysql_fetch_array($result);
+		$stats['totalopen'] = $row[0];
 		mysql_close();
 		return $stats;
 	}	

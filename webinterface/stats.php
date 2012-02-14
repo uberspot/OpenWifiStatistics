@@ -143,7 +143,27 @@ require_once('vendors.php');
             sec.draw();
 	</script>';
 	
-	echo "<hr/><h2>Pie Free vs Protected</h2><br/>";
+	echo "<hr/>";
+	
+	echo '
+		<div class="charts_container">
+
+            <canvas id="openCanvas" width="500" height="500">
+                Your web-browser does not support the HTML 5 canvas element.
+            </canvas>
+
+		</div>';
+		
+	echo '
+	<script type="text/javascript">
+	var open = new AwesomeChart(\'openCanvas\');
+            open.title = "Open wifi vs Protected";
+            open.data = ['.$stats['totalopen'].','.($stats['totalwifi']-$stats['totalopen']).'];
+            open.labels = [\'Open\',\'Protected\'];
+            open.draw();
+	</script>';
+	
+	echo '<p><strong>'.(number_format(($stats['totalopen']/$stats['totalwifi'])*100, 3, '.', '')).'%</strong> totaly unprotected wifis</p>';
 	
 	echo "<h2>% unsecure networks</h2><br/>";
 	
