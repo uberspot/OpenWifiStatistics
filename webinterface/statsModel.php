@@ -11,7 +11,7 @@ class statsModel {
 	public function getResults($mode=0) {
 		$results = array();
 		
-		mysql_connect($GLOBALS['host'], $GLOBALS['user']);
+		mysql_connect($GLOBALS['host'], $GLOBALS['user'], $GLOBALS['password']);
 
 		mysql_select_db($GLOBALS['database']) or die("Unable to select database");
 
@@ -41,7 +41,7 @@ class statsModel {
 		
 		$stats = array();
 		
-		mysql_connect($GLOBALS['host'], $GLOBALS['user']);
+		mysql_connect($GLOBALS['host'], $GLOBALS['user'], $GLOBALS['password']);
 		mysql_select_db($GLOBALS['database']) or die("Unable to select database");
 		$result = mysql_query("SELECT COUNT(*) FROM `scan_results`");
 		$row = mysql_fetch_array($result);
