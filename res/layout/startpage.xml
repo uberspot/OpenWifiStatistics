@@ -31,11 +31,11 @@
 		        android:text="@string/start_monitoring" />
 			
 		    <Button
-		        android:id="@+id/map"
+		        android:id="@+id/results"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:onClick="goToMap"
-		        android:text="@string/map" />
+		        android:onClick="viewResults"
+		        android:text="@string/view_results" />
 		    
 		    <Button
 		        android:id="@+id/showStatistics"

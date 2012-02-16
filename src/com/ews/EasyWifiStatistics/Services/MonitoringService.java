@@ -1,7 +1,9 @@
 package com.ews.EasyWifiStatistics.Services;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,17 +46,12 @@ public class MonitoringService extends Service {
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
         			for(ScanResult result : results) {
-        				int indexOfOldRecord = scanResults.indexOf(new EScanResult(result, 0, 0, lastProvider));
-    					if(indexOfOldRecord!=-1 && scanResults.get(indexOfOldRecord).level <= result.level) {
-        					scanResults.remove(indexOfOldRecord);
-        					scanResults.add(new EScanResult(result, latitude, longitude, lastProvider));
-    					} else {
-    						scanResults.add(new EScanResult(result, latitude, longitude, lastProvider));
-        				}
+        				
+        				if( !scanResults.containsKey(result.BSSID) ) {
+        					scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
+        				} else if(scanResults.get(result.BSSID).level <= result.level)
+    						scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
         			}
-        			/* save scan results (either internally or in a database[better]) to preserve in case the service stops
-        			 * or possibly save the results in the onDestroy() function 
-	    			*/
         			
         			if(uiHandler!=null) {
 	        			Message message = new Message();
@@ -76,7 +73,9 @@ public class MonitoringService extends Service {
     };
 	
 	/* Cached scanResults */
-	private ArrayList<EScanResult> scanResults;
+	private HashMap<String, EScanResult> scanResults;
+	
+	public HashMap<String, EScanResult> getScanResults() { return scanResults; }
 	
 	private ResultUploader formUploader;
 	
@@ -144,12 +143,12 @@ public class MonitoringService extends Service {
 		
 		loadPreferences();
 		
-		scanResults = (ArrayList<EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
+		scanResults = (HashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
 		
 		if(scanResults==null)
-			scanResults = new ArrayList<EScanResult>();
+			scanResults = new HashMap<String, EScanResult>();
 
-		timer = new Timer();
+		timer = new Timer("Service Timer");
 		
 		//start listening for current location
 		locationFinder = new LocationFinder((LocationManager) getSystemService(Context.LOCATION_SERVICE), listener);
@@ -227,12 +226,13 @@ public class MonitoringService extends Service {
 	 * it deletes it from the cached lists.
 	 */
 	public void uploadResults() {
-		for(int i = 0; i < scanResults.size(); i++){
-			EScanResult result = scanResults.get(i);
-			if( formUploader.send(result) ) { 
-				scanResults.remove(i--); 
+		Iterator<Entry<String, EScanResult>> iterator = scanResults.entrySet().iterator();
+		while(iterator.hasNext()) {
+			EScanResult result = iterator.next().getValue();
+			if(formUploader.send(result)) {
+				iterator.remove();
 			}
-    	}
+		}
 	}
 	
 	public WifiInfo getWifiInfo(){

@@ -44,7 +44,7 @@ public class ResultUploader {
 	            HttpEntity entity = response.getEntity();
 	            entity.consumeContent();
 			} catch (Exception e) {
-				System.out.println(e);
+				e.printStackTrace(System.out);
 				return false;
 			}
 			return true;
@@ -80,21 +80,8 @@ public class ResultUploader {
 					+ URLEncoder.encode("longtitude", "UTF-8")+"="+URLEncoder.encode( (result.longitude+""), "UTF-8")+"&"
 					+ URLEncoder.encode("submit", "UTF-8")+"="+URLEncoder.encode("submit", "UTF-8");
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace(System.out);
 			return "";
 		}
-	}
-
-	/** Sends all the given results via http 
-	 * @param results
-	 * @return an array of boolean indicating the status of each results' upload. 
-	 * True if it was uploaded successfully, false otherwise.
-	 */
-	public ArrayList<Boolean> sendAll(List<EScanResult> results) {
-		ArrayList<Boolean> validUploads = new ArrayList<Boolean>();
-		for(EScanResult result : results) {
-			validUploads.add( send(result) );
-		}
-		return validUploads;
 	}
 }

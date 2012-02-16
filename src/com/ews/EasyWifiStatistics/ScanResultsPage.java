@@ -1,12 +1,12 @@
-/**
- * 
- */
 package com.ews.EasyWifiStatistics;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+
+import com.ews.EasyWifiStatistics.Services.EScanResult;
 
 import android.app.Activity;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,8 +15,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- */
 public class ScanResultsPage extends Activity {
 	
 	/** Handles scan results from the wifi service */
@@ -24,11 +22,10 @@ public class ScanResultsPage extends Activity {
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
         		case 1:
-        			@SuppressWarnings("unchecked")
-					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			resultsView.setText("");
-        			for (ScanResult result : results) {
-        				resultsView.append(result.toString() + "\n"); //todo: display results in a prettier way 
+        			Iterator<Entry<String, EScanResult>> iterator = Globals.service.getScanResults().entrySet().iterator();
+        			while(iterator.hasNext()) {
+        				resultsView.append(iterator.next().getValue().toString() + "\n\n"); //todo: display results in a prettier way 
         			}
         			break;
         	}

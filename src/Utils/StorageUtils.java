@@ -91,7 +91,7 @@ public class StorageUtils extends ContextWrapper {
 			output.flush();
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		} finally {
 			if(output!=null)
 				try { output.close(); } catch (IOException e) { }
@@ -105,7 +105,7 @@ public class StorageUtils extends ContextWrapper {
 			input = new ObjectInputStream ( new BufferedInputStream( openFileInput(fileName) ) );
 			obj = input.readObject();
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		} finally {
 			if(input!=null)
 				try { input.close(); } catch (IOException e) { }

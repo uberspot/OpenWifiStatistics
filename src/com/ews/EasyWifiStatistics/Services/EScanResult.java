@@ -20,14 +20,14 @@ public class EScanResult implements Serializable {
 	public double longitude, latitude;
 	
 	public EScanResult(ScanResult result, double latitude, double longitude, String provider) {
-		BSSID = result.BSSID;
-		capabilities = result.capabilities;
-		SSID = result.SSID;
+		BSSID = result.BSSID.trim();
+		capabilities = result.capabilities.trim();
+		SSID = result.SSID.trim();
 		frequency = result.frequency;
 		level = result.level;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.provider = provider;
+		this.provider = provider.trim();
 	}
 	
 	 /* (non-Javadoc)
@@ -35,7 +35,7 @@ public class EScanResult implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return 31 * (31 * 1 + ((BSSID == null) ? 0 : BSSID.hashCode())) + ((SSID == null) ? 0 : SSID.hashCode());
+		return 31 * (31 * 1 + ((BSSID == null) ? 0 : BSSID.hashCode()));
 	}
 
 	/* (non-Javadoc)
@@ -48,7 +48,7 @@ public class EScanResult implements Serializable {
         if (o == null || !o.getClass().equals(getClass()))
             return false;
         EScanResult result = (EScanResult) o;
-        return result.BSSID.equalsIgnoreCase(BSSID) && result.SSID.equalsIgnoreCase(SSID);
+        return result.BSSID.equalsIgnoreCase(BSSID);
     }
 
     /* (non-Javadoc)
@@ -57,8 +57,8 @@ public class EScanResult implements Serializable {
     @Override
     public String toString() {
         return  "BSSID: "  + BSSID +
-        		" capabilities: " + capabilities +
         		" SSID: " + SSID + 
+        		" capabilities: " + capabilities +
         		" frequency: " + frequency + 
         		" level " + level + 
         		" latitude: " + latitude + 

@@ -5,6 +5,7 @@ import com.ews.EasyWifiStatistics.Services.MonitoringService;
 import Utils.StorageUtils;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -50,8 +51,8 @@ public class StartPage extends Activity {
         startActivity(new Intent(this, SettingsPage.class)); 
     }
     
-    public void goToMap(View v) {
-        startActivity(new Intent(this, WifiMapPage.class));
+    public void viewResults(View v) {
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://uberspot.ath.cx/wifi/results.php")));
     }
     
     public void toggleMonitoring(View v) {
