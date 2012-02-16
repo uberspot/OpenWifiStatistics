@@ -57,7 +57,7 @@ public class ResultUploader {
 		nameValuePairs.add(new BasicNameValuePair("ssid", result.SSID));
 		nameValuePairs.add(new BasicNameValuePair("frequency", Integer.toString(result.frequency) ));
 		nameValuePairs.add(new BasicNameValuePair("level", Integer.toString(result.level) ));
-		nameValuePairs.add(new BasicNameValuePair("provider", "wifi" ));
+		nameValuePairs.add(new BasicNameValuePair("provider", result.provider ));
 		nameValuePairs.add(new BasicNameValuePair("longitude", result.longitude+"" ));
 		nameValuePairs.add(new BasicNameValuePair("latitude", result.latitude+"" ));
 		nameValuePairs.add(new BasicNameValuePair("submit", "submit" ));
@@ -75,7 +75,7 @@ public class ResultUploader {
 					+ URLEncoder.encode("capabilities", "UTF-8")+"="+URLEncoder.encode(result.SSID, "UTF-8")+"&"
 					+ URLEncoder.encode("frequency", "UTF-8")+"="+URLEncoder.encode(result.frequency+"", "UTF-8")+"&"
 					+ URLEncoder.encode("level", "UTF-8")+"="+URLEncoder.encode( (result.level+""), "UTF-8")+"&"
-					+ URLEncoder.encode("provider", "UTF-8")+"="+URLEncoder.encode("wifi", "UTF-8")+"&"
+					+ URLEncoder.encode("provider", "UTF-8")+"="+URLEncoder.encode(result.provider, "UTF-8")+"&"
 					+ URLEncoder.encode("latitude", "UTF-8")+"="+URLEncoder.encode(result.latitude+"", "UTF-8")+"&"
 					+ URLEncoder.encode("longtitude", "UTF-8")+"="+URLEncoder.encode( (result.longitude+""), "UTF-8")+"&"
 					+ URLEncoder.encode("submit", "UTF-8")+"="+URLEncoder.encode("submit", "UTF-8");

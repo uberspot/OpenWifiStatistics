@@ -15,11 +15,11 @@ public class EScanResult implements Serializable {
 
 	private static final long serialVersionUID = -5651752444215860401L;
 
-	public String BSSID, capabilities, SSID; 
+	public String BSSID, capabilities, SSID, provider; 
 	public int frequency, level;
 	public double longitude, latitude;
 	
-	public EScanResult(ScanResult result, double latitude, double longitude) {
+	public EScanResult(ScanResult result, double latitude, double longitude, String provider) {
 		BSSID = result.BSSID;
 		capabilities = result.capabilities;
 		SSID = result.SSID;
@@ -27,6 +27,7 @@ public class EScanResult implements Serializable {
 		level = result.level;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.provider = provider;
 	}
 	
 	 /* (non-Javadoc)
@@ -61,6 +62,7 @@ public class EScanResult implements Serializable {
         		" frequency: " + frequency + 
         		" level " + level + 
         		" latitude: " + latitude + 
-        		" longitude: " + longitude;
+        		" longitude: " + longitude + 
+        		" provider: " + provider;
     }
 }

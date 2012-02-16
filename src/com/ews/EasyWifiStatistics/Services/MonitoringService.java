@@ -44,12 +44,12 @@ public class MonitoringService extends Service {
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
         			for(ScanResult result : results) {
-        				int indexOfOldRecord = scanResults.indexOf(new EScanResult(result, 0, 0));
+        				int indexOfOldRecord = scanResults.indexOf(new EScanResult(result, 0, 0, lastProvider));
     					if(indexOfOldRecord!=-1 && scanResults.get(indexOfOldRecord).level <= result.level) {
         					scanResults.remove(indexOfOldRecord);
-        					scanResults.add(new EScanResult(result, latitude, longitude));
+        					scanResults.add(new EScanResult(result, latitude, longitude, lastProvider));
     					} else {
-    						scanResults.add(new EScanResult(result, latitude, longitude));
+    						scanResults.add(new EScanResult(result, latitude, longitude, lastProvider));
         				}
         			}
         			/* save scan results (either internally or in a database[better]) to preserve in case the service stops
@@ -99,6 +99,8 @@ public class MonitoringService extends Service {
 	private boolean providerDisabled = true;
 	private double longitude, latitude;
 	
+	private String lastProvider;
+	
 	public double getLongitude() { return longitude; }
 	public double getLatitude() { return latitude; }
 	
@@ -113,6 +115,7 @@ public class MonitoringService extends Service {
 	        	latitude = location.getLatitude();
 	        	longitude = location.getLongitude();
 	        	providerDisabled = false;
+	        	lastProvider = location.getProvider();
     			if(uiHandler!=null)
     				uiHandler.sendEmptyMessage(2);
 	        }
@@ -153,7 +156,8 @@ public class MonitoringService extends Service {
 		
 		latitude = LocationFinder.defaultLatitude;
     	longitude = LocationFinder.defaultLongitude;
-		
+    	lastProvider = "network";
+    	
 		formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
 		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);

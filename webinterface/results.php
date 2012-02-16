@@ -24,31 +24,31 @@ require_once('templates/template.php');
 		case 0: echo "<tr><th><a href='?order=2'>Date ↺</a></th>
 		<th>BSSID</th><th>SSID</th>
 		<th><a href='?order=4'>Capabilities ↺</a></th><th>Frequency</th>
-		<th><a href='?order=6'>Power ↺</a></th></tr>";break;
+		<th><a href='?order=6'>Power ↺</a></th><th>Provider</th></tr>";break;
 		case 2: echo "<tr><th><a href='?order=3'>Date ↓</a></th>
 		<th>BSSID</th><th>SSID</th>
 		<th><a href='?order=4'>Capabilities ↺</a></th><th>Frequency</th>
-		<th><a href='?order=6'>Power ↺</a></th></tr>";break;
+		<th><a href='?order=6'>Power ↺</a></th><th>Provider</th></tr>";break;
 		case 3: echo "<tr><th><a href='?order=2'>Date ↑</a></th>
 		<th>BSSID</th><th>SSID</th>
 		<th><a href='?order=4'>Capabilities ↺</a></th><th>Frequency</th>
-		<th><a href='?order=6'>Power ↺</a></th></tr>";break;
+		<th><a href='?order=6'>Power ↺</a></th><th>Provider</th></tr>";break;
 		case 4: echo "<tr><th><a href='?order=2'>Date ↺</a></th>
 		<th>BSSID</th><th>SSID</th>
 		<th><a href='?order=5'>Capabilities ↓</a></th><th>Frequency</th>
-		<th><a href='?order=6'>Power ↺</a></th></tr>";break;
+		<th><a href='?order=6'>Power ↺</a></th><th>Provider</th></tr>";break;
 		case 5: echo "<tr><th><a href='?order=2'>Date ↺</a></th>
 		<th>BSSID</th><th>SSID</th>
 		<th><a href='?order=4'>Capabilities ↑</a></th><th>Frequency</th>
-		<th><a href='?order=6'>Power ↺</a></th></tr>";break;
+		<th><a href='?order=6'>Power ↺</a></th><th>Provider</th></tr>";break;
 		case 6: echo "<tr><th><a href='?order=2'>Date ↺</a></th>
 		<th>BSSID</th><th>SSID</th>
 		<th><a href='?order=4'>Capabilities ↺</a></th><th>Frequency</th>
-		<th><a href='?order=7'>Power ↓</a></th></tr>";break;
+		<th><a href='?order=7'>Power ↓</a></th><th>Provider</th></tr>";break;
 		case 7: echo "<tr><th><a href='?order=2'>Date ↺</a></th>
 		<th>BSSID</th><th>SSID</th>
 		<th><a href='?order=4'>Capabilities ↺</a></th><th>Frequency</th>
-		<th><a href='?order=6'>Power ↑</a></th></tr>";break;
+		<th><a href='?order=6'>Power ↑</a></th><th>Provider</th></tr>";break;
 	}
     $flag=true;
     foreach($results->getResults($order) as $result) {
@@ -65,6 +65,7 @@ require_once('templates/template.php');
 			echo '<td>'.$result->getCapabilities().'</td>';
 			echo '<td>'.$result->getFrequency().'</td>';
 			echo '<td>'.$result->getLevel().'</td>';
+                        echo '<td>'.$result->getProvider().'</td>';
 			echo "</tr>";
     }
     echo "</table>";
