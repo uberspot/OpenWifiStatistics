@@ -79,6 +79,8 @@ public class MonitoringService extends Service {
 	
 	private ResultUploader formUploader;
 	
+	private boolean autoUpload;
+	
 	private StorageUtils storageUtils;
 	
 	/** Provides access to android's wifi info */
@@ -174,9 +176,10 @@ public class MonitoringService extends Service {
 		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
 	}
 	
-	private void loadPreferences() {
+	public void loadPreferences() {
 		 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		 try { 
+		 try {
+			 autoUpload = prefs.getBoolean("autoUpload", true);
 			 scanTimeout = Integer.parseInt(prefs.getString("wScanPref", "30")) * 1000;
 			 uploadTimeout = Integer.parseInt(prefs.getString("uploadPref", "420")) * 1000;
 			 locationTimeout = Integer.parseInt(prefs.getString("lScanPref", "120")) * 1000;
@@ -255,7 +258,7 @@ public class MonitoringService extends Service {
     /** Task that just performs a scan. */
     private class UploadResultsTask extends TimerTask {
         @Override public void run() {
-        	if (wifi!=null && wifi.isWifiEnabled()){ //also check if is currently connected to internet
+        	if (wifi!=null && wifi.isWifiEnabled() && autoUpload){ //also check if is currently connected to internet
         		uploadResults();
         	}
         }

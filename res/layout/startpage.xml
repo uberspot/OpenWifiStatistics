@@ -38,11 +38,11 @@
 		        android:text="@string/view_results" />
 		    
 		    <Button
-		        android:id="@+id/showStatistics"
+		        android:id="@+id/uploadResults"
 		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:onClick="goToStatistics"
-		        android:text="@string/statistics" />
+		        android:onClick="uploadResults"
+		        android:text="@string/upload_results" />
 		    <Button
 		        android:id="@+id/measureConnection"
 		        android:layout_width="match_parent"

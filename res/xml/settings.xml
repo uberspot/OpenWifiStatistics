@@ -30,5 +30,10 @@
                 android:title="@string/location_ttl"
                 android:key="lscan_ttl"
                 android:inputType="phone" />
+        <CheckBoxPreference
+	              android:title="Auto-upload results"
+	              android:defaultValue="true"
+	              android:summary="Upload the scans every {upload interval} seconds automatically"
+	              android:key="autoUpload" />
         </PreferenceCategory>
 </PreferenceScreen>

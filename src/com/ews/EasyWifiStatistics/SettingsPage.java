@@ -9,4 +9,13 @@ public class SettingsPage extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
 	}
+	
+	@Override
+	public void onDestroy() {
+    	super.onDestroy();
+    	if(Globals.service!=null) {
+        	Globals.service.loadPreferences();
+        }
+		this.finish();
+	}
 }

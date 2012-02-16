@@ -38,11 +38,6 @@
         <activity
             android:screenOrientation="portrait"
             android:label="@string/app_name"
-            android:name=".StatisticsPage" >
-        </activity>
-        <activity
-            android:screenOrientation="portrait"
-            android:label="@string/app_name"
             android:name=".ScanResultsPage" >
         </activity>
         <activity

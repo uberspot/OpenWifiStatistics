@@ -43,8 +43,10 @@ public class StartPage extends Activity {
         startActivity(new Intent(this, MeasureConnectionPage.class));
     }
     
-    public void goToStatistics(View v) {
-        startActivity(new Intent(this, StatisticsPage.class));
+    public void uploadResults(View v) {
+        if(Globals.service!=null) {
+        	Globals.service.uploadResults();
+        }
     }
     
     public void goToSettings(View v) {
