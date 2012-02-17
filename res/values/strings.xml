@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">EasyWifiStatistics</string>
+    <string name="app_name">OpenWifiStatistics</string>
     <string name="start_monitoring">Start Monitoring</string>
     <string name="stop_monitoring">Stop Monitoring</string>
     <string name="upload_results">Upload Results</string>

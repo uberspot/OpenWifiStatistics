@@ -20,8 +20,8 @@
         
         <Button
             android:id="@+id/scan"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            style="@style/ButtonText" 
+            android:background="@drawable/btn_white"
             android:onClick="onScanClick"
             android:text="@string/scan" />
         

@@ -12,8 +12,8 @@
 
         <TextView
             android:id="@+id/textView1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            style="@style/ButtonText" 
+            android:background="@drawable/btn_white"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/measure_connection"
             android:textAppearance="?android:attr/textAppearanceLarge" />

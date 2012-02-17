@@ -1,14 +1,14 @@
-EasyWifiStatistics
+OpenWifiStatistics
 ==================
 
-EasyWifiStatistics is an Android application used to scan wifi networks, 
+OpenWifiStatistics is an Android application used to scan wifi networks, 
 gather statistics about them (including location) and upload the data to a
 server for analysis. It's still under development.
 
 License
 -------
 
-    EasyWifiStatistics is free software: you can redistribute it and/or modify
+    OpenWifiStatistics is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.

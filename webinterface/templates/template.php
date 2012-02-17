@@ -12,7 +12,7 @@ class Template {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-		<title>Easy Wifi Statistics$title</title>
+		<title>Open Wifi Statistics$title</title>
 		<link rel="stylesheet" href="templates/style.css" type="text/css" />
 		$script
 	</head>
