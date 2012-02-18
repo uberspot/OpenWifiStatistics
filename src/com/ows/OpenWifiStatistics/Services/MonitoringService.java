@@ -173,7 +173,7 @@ public class MonitoringService extends Service {
 	    timer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
 	    timer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
 	    
-		Toast.makeText(this,"Service created...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
 	}
 	
 	public void loadPreferences() {
@@ -208,7 +208,7 @@ public class MonitoringService extends Service {
 			locationFinder.stopListening();
 		storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
 		Globals.service = null;
-		Toast.makeText(this, "Service destroyed...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Stopped monitoring", Toast.LENGTH_SHORT).show();
 	}
 	
 	/** Performs a scan via WifiManagers interface

@@ -4,6 +4,7 @@ import com.ows.OpenWifiStatistics.R;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.widget.Toast;
 
 public class SettingsPage extends PreferenceActivity {
 	@Override
@@ -18,6 +19,7 @@ public class SettingsPage extends PreferenceActivity {
     	if(Globals.service!=null) {
         	Globals.service.loadPreferences();
         }
+    	Toast.makeText(this,"Restart monitoring for the changes to take effect", Toast.LENGTH_SHORT).show();
 		this.finish();
 	}
 }

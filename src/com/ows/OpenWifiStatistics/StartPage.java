@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class StartPage extends Activity {
 	
@@ -47,6 +48,8 @@ public class StartPage extends Activity {
     public void uploadResults(View v) {
         if(Globals.service!=null) {
         	Globals.service.uploadResults();
+        } else {
+        	Toast.makeText(this,"Start monitoring to upload", Toast.LENGTH_SHORT).show();
         }
     }
     
