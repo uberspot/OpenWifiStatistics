@@ -4,6 +4,7 @@ require_once('statsModel.php');
 require_once('statModel.php');
 require_once('templates/template.php');
 require_once('configuration.php');
+require_once('jsmin.php');
 
     $results = new statsModel();
 
@@ -84,6 +85,8 @@ require_once('configuration.php');
 			
 		  }
     </script>';
+    
+    $script = JSMin::minify($script);
 	
     echo Template::header("Map",$script);
     echo '<div id="map">';
