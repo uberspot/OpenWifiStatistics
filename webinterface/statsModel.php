@@ -25,6 +25,7 @@ class statsModel {
 			case 5: $query .= " ORDER BY `capabilities` DESC"; break;
 			case 6: $query .= " ORDER BY `level`"; break;
 			case 7: $query .= " ORDER BY `level` DESC"; break;
+			case 8: $query .= " GROUP BY `bssid`"; break;
 		}
 		
 		$result = mysql_query($query);
