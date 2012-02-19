@@ -53,6 +53,8 @@ public class MonitoringService extends Service {
     						scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
         			}
         			
+        			storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+        			
         			if(uiHandler!=null) {
 	        			Message message = new Message();
 	        			message.what = 1;
