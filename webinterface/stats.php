@@ -1,20 +1,31 @@
 <?php
 
+$cache = 'cache/stats.html';
+if(file_exists($cache)) {
+	$fromcreation = date('U')-date ('U',filemtime($cache));
+	//			hours	min		sec
+	$time =    	1   *	15	*	60;//15min
+	if($fromcreation < $time) {
+		echo file_get_contents($cache);
+		exit();
+	}
+}
+
 require_once('statsModel.php');
 require_once('templates/template.php');
 require_once('vendors.php');
 
 	$script = '<script type="text/javascript" src="js/awesomechart.js"></script>';
-	echo Template::header("Statistics",$script);
-	echo Template::contentStart();
+	$out = Template::header("Statistics",$script);
+	$out .= Template::contentStart();
 
 	$results = new statsModel();
 	$stats = $results->getStats();
-	echo "<h1>General Info</h1><br/>";
-	echo "<strong>Total scans: </strong>".$stats['total'];
-	echo " <strong> Distinct wifis: </strong>".$stats['totalwifi']."<hr/>";
-	echo "<h1>Frequency Statistics</h1><br/>";
-	echo '
+	$out .= "<h1>General Info</h1><br/>";
+	$out .= "<strong>Total scans: </strong>".$stats['total'];
+	$out .= " <strong> Distinct wifis: </strong>".$stats['totalwifi']."<hr/>";
+	$out .= "<h1>Frequency Statistics</h1><br/>";
+	$out .= '
 		<div class="charts_container">
 
             <canvas id="frequencyCanvas" width="600" height="400">
@@ -38,7 +49,7 @@ require_once('vendors.php');
 		}
 	}
 		
-	echo '
+	$out .= '
 	<script type="text/javascript">
 	var freq = new AwesomeChart(\'frequencyCanvas\');
             freq.title = "10 Most Popular Frequency Settings";
@@ -47,9 +58,9 @@ require_once('vendors.php');
             freq.draw();
 	</script>';
 	
-	echo "<hr><h1>Access Point Vendors</h1><br/>";
+	$out .= "<hr><h1>Access Point Vendors</h1><br/>";
 	
-	echo '
+	$out .= '
 		<div class="charts_container">
 
             <canvas id="vendorsCanvas" width="600" height="600">
@@ -88,7 +99,7 @@ require_once('vendors.php');
 		}
 	}
 	
-	echo '
+	$out .= '
 	<script type="text/javascript">
 	var vendors = new AwesomeChart(\'vendorsCanvas\');
 			vendors.chartType = "pie";
@@ -99,17 +110,17 @@ require_once('vendors.php');
             vendors.draw();
 	</script>';
 	
-	echo '<table><tr class=\'vendors\'><th>Vendor</th><th>Description</th><th>Count</th></tr>';
+	$out .= '<table><tr class=\'vendors\'><th>Vendor</th><th>Description</th><th>Count</th></tr>';
 	$i=0;
 	foreach($vendors as $vendor=>$count) {
-		echo "<tr id='vendor$i' class='vendors'><td>$vendor</td><td>$vendorinfo[$vendor]</td><td>$count</td></tr>";
+		$out .= "<tr id='vendor$i' class='vendors'><td>$vendor</td><td>$vendorinfo[$vendor]</td><td>$count</td></tr>";
 		$i++;
 	}
-	echo '</table><hr/>';
+	$out .= '</table><hr/>';
 	
-	echo "<h1>Security</h1><br/>";
+	$out .= "<h1>Security</h1><br/>";
 	
-	echo '
+	$out .= '
 		<div class="charts_container">
 
             <canvas id="secCanvas" width="800" height="800">
@@ -133,7 +144,7 @@ require_once('vendors.php');
 		}
 	}
 		
-	echo '
+	$out .= '
 	<script type="text/javascript">
 	var sec = new AwesomeChart(\'secCanvas\');
 			sec.chartType = "horizontal bars";
@@ -143,9 +154,9 @@ require_once('vendors.php');
             sec.draw();
 	</script>';
 	
-	echo "<hr/>";
+	$out .= "<hr/>";
 	
-	echo '
+	$out .= '
 		<div class="charts_container">
 
             <canvas id="openCanvas" width="500" height="500">
@@ -154,7 +165,7 @@ require_once('vendors.php');
 
 		</div>';
 		
-	echo '
+	$out .= '
 	<script type="text/javascript">
 	var open = new AwesomeChart(\'openCanvas\');
             open.title = "Open wifi vs Protected";
@@ -163,11 +174,16 @@ require_once('vendors.php');
             open.draw();
 	</script>';
 	
-	echo '<p><strong>'.(number_format(($stats['totalopen']/$stats['totalwifi'])*100, 3, '.', '')).'%</strong> totaly unprotected wifis</p>';
+	$out .= '<p><strong>'.(number_format(($stats['totalopen']/$stats['totalwifi'])*100, 3, '.', '')).'%</strong> totaly unprotected wifis</p>';
 	
-	echo "<h2>% unsecure networks</h2><br/>";
+	$out .= "<h2>% unsecure networks</h2><br/>";
 	
-	echo Template::contentEnd();
-	echo Template::footer();
+	$out .= Template::contentEnd();
+	$out .= Template::footer();
+	
+	$file = fopen($cache,'w');
+    fwrite($file,$out);
+    fclose($file);
+    echo file_get_contents($cache);
 
 ?>

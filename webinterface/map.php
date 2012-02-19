@@ -1,5 +1,16 @@
 <?php
 
+$cache = 'cache/map.html';
+if(file_exists($cache)) {
+	$fromcreation = date('U')-date ('U',filemtime($cache));
+	//			hours	min		sec
+	$time =    	1   *	15	*	60;//15min
+	if($fromcreation < $time) {
+		echo file_get_contents($cache);
+		exit();
+	}
+}
+
 require_once('statsModel.php');
 require_once('statModel.php');
 require_once('templates/template.php');
@@ -88,13 +99,17 @@ require_once('jsmin.php');
     
     $script = JSMin::minify($script);
 	
-    echo Template::header("Map",$script);
-    echo '<div id="map">';
-    echo '<div id="map_canvas" style="width:100%; height:100%"></div>';
-    echo '</div>';
+    $out = Template::header("Map",$script);
+    $out .= '<div id="map">';
+    $out .= '<div id="map_canvas" style="width:100%; height:100%"></div>';
+    $out .= '</div>';
     
-    echo '<script type="text/javascript">initialize()</script>';
+    $out .= '<script type="text/javascript">initialize()</script>';
         
-    echo Template::footer();
+    $out .= Template::footer();
     
+    $file = fopen($cache,'w');
+    fwrite($file,$out);
+    fclose($file);
+    echo file_get_contents($cache);
 ?>
