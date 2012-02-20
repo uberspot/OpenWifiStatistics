@@ -193,23 +193,23 @@ public class MonitoringService extends Service {
 			 int usageScenario = Integer.parseInt(prefs.getString("usage_scenario", "1"));
 			 if(usageScenario == 1) {
 				scanTimeout = 30000; uploadTimeout = 420000;
-				locationTimeout = 120000; locationTaskTTL = 40000;
+				locationTimeout = 40000; locationTaskTTL = 120000;
 			 } else if(usageScenario == 2) {
 				scanTimeout = 5000; uploadTimeout = 720000;
-				locationTimeout = 420000; locationTaskTTL = 10000; 
+				locationTimeout = 10000; locationTaskTTL = Integer.MAX_VALUE; 
 			 } else if(usageScenario == 3) {
 				scanTimeout = 60000; uploadTimeout = 720000;
 				locationTimeout = 120000; locationTaskTTL = 120000;
 			 } else {
 				 scanTimeout = Integer.parseInt(prefs.getString("wScanPref", "30")) * 1000;
 				 uploadTimeout = Integer.parseInt(prefs.getString("uploadPref", "420")) * 1000;
-				 locationTimeout = Integer.parseInt(prefs.getString("lScanPref", "120")) * 1000;
-				 locationTaskTTL = Integer.parseInt(prefs.getString("lscan_ttl", "60")) * 1000;
+				 locationTimeout = Integer.parseInt(prefs.getString("lScanPref", "60")) * 1000;
+				 locationTaskTTL = Integer.parseInt(prefs.getString("lscan_ttl", "120")) * 1000;
 			 }
 		 } catch (NumberFormatException e) {
              Toast.makeText(this,"Error in loading settings, using defaults", Toast.LENGTH_SHORT).show();
              scanTimeout = 30000; uploadTimeout = 420000;
-             locationTimeout = 120000; locationTaskTTL = 40000;
+             locationTimeout = 40000; locationTaskTTL = 120000;
 		 }
 	}
 	

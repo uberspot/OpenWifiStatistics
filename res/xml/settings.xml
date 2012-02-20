@@ -26,14 +26,14 @@
         <EditTextPreference
                 android:name="Location Scan Interval"
                 android:summary="Interval between location scans(in seconds)"
-                android:defaultValue="120"
+                android:defaultValue="60"
                 android:title="@string/lscan_interval"
                 android:key="lScanPref"
                 android:inputType="phone" />
         <EditTextPreference
                 android:name="Location scan time"
                 android:summary="Time in which location is scanned(in seconds)"
-                android:defaultValue="60"
+                android:defaultValue="120"
                 android:title="@string/location_ttl"
                 android:key="lscan_ttl"
                 android:inputType="phone" />
