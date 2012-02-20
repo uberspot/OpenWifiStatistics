@@ -240,6 +240,7 @@ public class MonitoringService extends Service {
 				iterator.remove();
 			}
 		}
+		storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
 	}
 	
 	public WifiInfo getWifiInfo(){
