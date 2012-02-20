@@ -1,11 +1,11 @@
 package com.ows.OpenWifiStatistics.Services;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.ows.OpenWifiStatistics.Globals;
 
@@ -57,8 +57,6 @@ public class MonitoringService extends Service {
     						scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
         			}
         			
-        			storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
-        			
         			if(uiHandler!=null) {
 	        			Message message = new Message();
 	        			message.what = 1;
@@ -79,9 +77,9 @@ public class MonitoringService extends Service {
     };
 	
 	/* Cached scanResults */
-	private HashMap<String, EScanResult> scanResults;
+	private ConcurrentHashMap<String, EScanResult> scanResults;
 	
-	public HashMap<String, EScanResult> getScanResults() { return scanResults; }
+	public ConcurrentHashMap<String, EScanResult> getScanResults() { return scanResults; }
 	
 	private ResultUploader formUploader;
 	
@@ -153,10 +151,10 @@ public class MonitoringService extends Service {
 		
 		scanCounter = APCounter = 0;
 		
-		scanResults = (HashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
+		scanResults = (ConcurrentHashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
 		
 		if(scanResults==null)
-			scanResults = new HashMap<String, EScanResult>(1000);
+			scanResults = new ConcurrentHashMap<String, EScanResult>(1000);
 
 		timer = new Timer("Service Timer");
 		
@@ -180,7 +178,11 @@ public class MonitoringService extends Service {
 	    timer.schedule( new ScanTask() , 5000, scanTimeout);
 	    timer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
 	    timer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
-	    
+	    timer.schedule(new TimerTask() {
+			@Override public void run() {
+				storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+			}
+	    }, 60000, 60000);
 		Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
 	}
 	
@@ -216,6 +218,7 @@ public class MonitoringService extends Service {
 		super.onDestroy();
 		unregisterReceiver(receiver);
 		timer.cancel();
+		storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
 		if(locationFinder.startedListening)
 			locationFinder.stopListening();
 		Globals.service = null;
