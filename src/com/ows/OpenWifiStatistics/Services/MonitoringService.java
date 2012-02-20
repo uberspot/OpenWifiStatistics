@@ -32,6 +32,8 @@ import android.widget.Toast;
 
 public class MonitoringService extends Service {
 	
+	public int scanCounter, APCounter;
+	
 	/* Handler stuff */
 	private Handler uiHandler=null;
 	
@@ -45,7 +47,10 @@ public class MonitoringService extends Service {
         			@SuppressWarnings("unchecked")
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
+        			scanCounter++;
+        			
         			for(ScanResult result : results) {
+        				APCounter++;
         				if( !scanResults.containsKey(result.BSSID) ) {
         					scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
         				} else if(scanResults.get(result.BSSID).level <= result.level)
@@ -145,6 +150,8 @@ public class MonitoringService extends Service {
 		storageUtils = new StorageUtils(getApplicationContext());
 		
 		loadPreferences();
+		
+		scanCounter = APCounter = 0;
 		
 		scanResults = (HashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
 		

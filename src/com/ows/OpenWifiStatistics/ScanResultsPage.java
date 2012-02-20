@@ -1,11 +1,8 @@
 package com.ows.OpenWifiStatistics;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.ows.OpenWifiStatistics.R;
-import com.ows.OpenWifiStatistics.Services.EScanResult;
 
 import android.app.Activity;
 import android.net.wifi.WifiConfiguration;
@@ -23,11 +20,14 @@ public class ScanResultsPage extends Activity {
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
         		case 1:
-        			resultsView.setText("");
-        			Iterator<Entry<String, EScanResult>> iterator = Globals.service.getScanResults().entrySet().iterator();
-        			while(iterator.hasNext()) {
-        				resultsView.append(iterator.next().getValue().toString() + "\n\n"); //todo: display results in a prettier way 
-        			}
+        			resultsView.setText("Scanned " + Globals.service.scanCounter + " times\n" + 
+        							    "Found " + Globals.service.APCounter + " total access points\n" + 
+        								Globals.service.getScanResults().size() + " unique access points\n" + 
+        								"Current gps position: \n" + "Latitude: " + Globals.service.getLatitude() + 
+        								" Longitude: " + Globals.service.getLongitude() + "\n");
+        			
+        			resultsView.append("" + "\n\n"); //todo: display results in a prettier way 
+        			
         			break;
         	}
             super.handleMessage(msg);
