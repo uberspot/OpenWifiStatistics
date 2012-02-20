@@ -149,7 +149,7 @@ public class MonitoringService extends Service {
 		scanResults = (HashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
 		
 		if(scanResults==null)
-			scanResults = new HashMap<String, EScanResult>();
+			scanResults = new HashMap<String, EScanResult>(1000);
 
 		timer = new Timer("Service Timer");
 		

@@ -35,7 +35,7 @@ public class EScanResult implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return 31 * (31 * 1 + ((BSSID == null) ? 0 : BSSID.hashCode()));
+		return (31 * (31 + ((BSSID == null) ? 0 : BSSID.hashCode()))) + (43 * (((SSID == null)?0:SSID.hashCode())));
 	}
 
 	/* (non-Javadoc)
