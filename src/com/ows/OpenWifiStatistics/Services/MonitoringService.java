@@ -46,7 +46,6 @@ public class MonitoringService extends Service {
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
         			for(ScanResult result : results) {
-        				
         				if( !scanResults.containsKey(result.BSSID) ) {
         					scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
         				} else if(scanResults.get(result.BSSID).level <= result.level)
@@ -182,23 +181,27 @@ public class MonitoringService extends Service {
 		 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		 try {
 			 autoUpload = prefs.getBoolean("autoUpload", true);
-			 scanTimeout = Integer.parseInt(prefs.getString("wScanPref", "30")) * 1000;
-			 uploadTimeout = Integer.parseInt(prefs.getString("uploadPref", "420")) * 1000;
-			 locationTimeout = Integer.parseInt(prefs.getString("lScanPref", "120")) * 1000;
-			 locationTaskTTL = Integer.parseInt(prefs.getString("lscan_ttl", "60")) * 1000;
+			 int usageScenario = Integer.parseInt(prefs.getString("usage_scenario", "1"));
+			 if(usageScenario == 1) {
+				scanTimeout = 30000; uploadTimeout = 420000;
+				locationTimeout = 120000; locationTaskTTL = 40000;
+			 } else if(usageScenario == 2) {
+				scanTimeout = 5000; uploadTimeout = 720000;
+				locationTimeout = 420000; locationTaskTTL = 10000; 
+			 } else if(usageScenario == 3) {
+				scanTimeout = 60000; uploadTimeout = 720000;
+				locationTimeout = 120000; locationTaskTTL = 120000;
+			 } else {
+				 scanTimeout = Integer.parseInt(prefs.getString("wScanPref", "30")) * 1000;
+				 uploadTimeout = Integer.parseInt(prefs.getString("uploadPref", "420")) * 1000;
+				 locationTimeout = Integer.parseInt(prefs.getString("lScanPref", "120")) * 1000;
+				 locationTaskTTL = Integer.parseInt(prefs.getString("lscan_ttl", "60")) * 1000;
+			 }
 		 } catch (NumberFormatException e) {
-			 Toast.makeText(this,"Error in loading settings, using defaults", Toast.LENGTH_SHORT).show();
-			 loadDefaults();
+             Toast.makeText(this,"Error in loading settings, using defaults", Toast.LENGTH_SHORT).show();
+             scanTimeout = 30000; uploadTimeout = 420000;
+             locationTimeout = 120000; locationTaskTTL = 40000;
 		 }
-	}
-	
-	/** Sets the time between wifi scans to 30 seconds, between uploads to 5 minutes, 
-	 * between location scans to 2 minutes and the time to scan for location changes to 1 minute. */
-	private static void loadDefaults() {
-		scanTimeout = 30000; 
-		uploadTimeout = 420000;
-		locationTimeout = 120000;
-		locationTaskTTL = 60000;
 	}
 	
 	@Override
@@ -208,7 +211,6 @@ public class MonitoringService extends Service {
 		timer.cancel();
 		if(locationFinder.startedListening)
 			locationFinder.stopListening();
-		storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
 		Globals.service = null;
 		Toast.makeText(this, "Stopped monitoring", Toast.LENGTH_SHORT).show();
 	}
