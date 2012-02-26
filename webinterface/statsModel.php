@@ -1,13 +1,8 @@
 <?php
-
 require_once('statModel.php');
 require_once('configuration.php');
 
-class statsModel {
-	
-	public function __construct() {
-	}
-	
+class statsModel {	
 	public function getResults($mode=0) {
 		$results = array();
 		
@@ -27,7 +22,6 @@ class statsModel {
 			case 7: $query .= " ORDER BY `level` DESC"; break;
 			case 8: $query .= " GROUP BY `bssid`"; break;
 		}
-		
 		$result = mysql_query($query);
 		
 		while($row = mysql_fetch_array($result)) {
@@ -39,7 +33,6 @@ class statsModel {
 	}
 	
 	public function getStats() {
-		
 		$stats = array();
 		
 		mysql_connect($GLOBALS['host'], $GLOBALS['user'], $GLOBALS['password']);
@@ -73,6 +66,6 @@ class statsModel {
 		$stats['totalopen'] = $row[0];
 		mysql_close();
 		return $stats;
-	}	
+	}
 }
 ?>

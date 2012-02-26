@@ -1,102 +1,24 @@
-html { height:100%; }
-body {
-	height:100%;
-	margin:.5em auto; 
-	padding:0px;
-	text-align: center;
-	width:90%;
-}
-#menu {
-	position: fixed;
-	height: 60px;
-	background-color: #5E9AC1;
-	color:white;
-	font-size: 3em;
-	border:2px ridge white;
-	-moz-border-radius:20px;
-	-webkit-border-radius:20px;
-	khtml-border-radius:20px;
-	border-radius:20px;
-	z-index: 5;
-	width:90%;
-	margin:0px auto; 
-	text-align:center; 
-}
-
-a {
-	text-decoration:none;
-	color: black;
-}
-
-a.abox {
-	color: white;
-}
-
-a.abox:hover {
-	text-decoration:underline;
-}
-
-.abox {
-	vertical-align: top;
-}
-
-#content {
-	padding:80px 0px 0px 0px;
-	margin:0px auto; 
-	position: relative;
-	width:80%;
-}
-
-#map {
-	position: relative;
-	height: 90%; 
-	padding: 80px 0px 0px 0px;
-	text-align:justify;
-	margin:0px auto;
-}
-
-.charts_container {
-	text-align: center;
-	width: 80%;
-	margin: 10px auto;
-}
-
-.chart_container {
-	width: 400px;
-	height: 400px;
-	margin: 0px 25px;
-	float: left;
-}
-
-#vendor0 { color: #006CFF }
-
-#vendor1 { color: #FF6600 }
-
-#vendor2 { color: #34A038 }
-
-#vendor3 { color: #945D59 }
-
-#vendor4 { color: #93BBF4 }
-
-#vendor5 { color: #F493B8 }
-
-#vendor8 { color: #CCC }
-
-#vendor7 { color: #f123cc }
-
-#vendor6 { color: #e3e123 }
-
-#vendor9 { color: red }
-
-.bg {
-	background-color: #5E9AC1;
-	color:white;
-}
-
-.vendors {
-	font-size: 1.75em;
-}
-
-td {
-	padding:0 .25em;
-}
+html{ height:100%; }
+body{ height:100%; margin:.5em auto; padding:0px; text-align: center; width:90%}
+#menu{ position: fixed; height: 60px; background-color: #5E9AC1; color:white; font-size: 3em; border:2px ridge white; -moz-border-radius:20px;	-webkit-border-radius:20px; khtml-border-radius:20px; border-radius:20px; z-index: 5; width:90%; margin:0px auto; text-align:center; }
+a{ text-decoration:none; color: black; }
+a.abox{ color: white; }
+a.abox:hover{ text-decoration:underline; }
+.abox{ vertical-align: top; }
+#content{ padding:80px 0px 0px 0px; margin:0px auto; position: relative; width:80%; }
+#map{ position: relative; height: 90%; padding: 80px 0px 0px 0px; text-align:justify; margin:0px auto; }
+.charts_container{ text-align: center; width: 80%; margin: 10px auto; }
+.chart_container{ width: 400px; height: 400px; margin: 0px 25px; float: left; }
+#vendor0{ color: #006CFF }
+#vendor1{ color: #FF6600 }
+#vendor2{ color: #34A038 }
+#vendor3{ color: #945D59 }
+#vendor4{ color: #93BBF4 }
+#vendor5{ color: #F493B8 }
+#vendor8{ color: #CCC }
+#vendor7{ color: #f123cc }
+#vendor6{ color: #e3e123 }
+#vendor9{ color: red }
+.bg{ background-color: #5E9AC1; color:white }
+.vendors{ font-size: 1.75em }
+td{ padding:0 .25em }

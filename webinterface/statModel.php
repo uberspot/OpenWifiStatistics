@@ -1,7 +1,5 @@
 <?php
-
-class statModel {
-	
+class statModel {	
 	private $timestamp;
 	private $bssid;
 	private $ssid;
@@ -12,7 +10,7 @@ class statModel {
 	private $latitude;
 	private $longitude;
 	
-	public function __construct($row) {
+	public function __construct(&$row) {
 		$this->timestamp = $row['timestamp'];
 		$this->bssid = $row['bssid'];
 		$this->ssid = $row['ssid'];
@@ -24,40 +22,22 @@ class statModel {
 		$this->longitude = $row['longitude'];
 	}
 	
-	function getTime() {
-		return $this->timestamp;
-	}
+	function getTime() { return $this->timestamp; }
 	
-	function getBssid() {
-		return $this->bssid;
-	}
+	function getBssid() { return $this->bssid; }
 	
-	function getSsid() {
-		return $this->ssid;
-	}
+	function getSsid() { return $this->ssid; }
 	
-	function getCapabilities() {
-		return $this->capabilities;
-	}
+	function getCapabilities() { return $this->capabilities; }
 	
-	function getLevel() {
-		return $this->level;
-	}
+	function getLevel() { return $this->level; }
 	
-	function getFrequency() {
-		return $this->frequency;
-	}
+	function getFrequency() { return $this->frequency; }
 	
-	function getProvider() {
-		return $this->provider;
-	}
+	function getProvider() { return $this->provider; }
 	
-	function getLatitude() {
-		return $this->latitude;
-	}
+	function getLatitude() { return $this->latitude; }
 	
-	function getLongitude() {
-		return $this->longitude;
-	}	
+	function getLongitude() { return $this->longitude; }	
 }
 ?>

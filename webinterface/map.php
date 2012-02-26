@@ -1,5 +1,4 @@
 <?php
-
 $cache = 'cache/map.html';
 if(file_exists($cache)) {
 	$fromcreation = date('U')-date ('U',filemtime($cache));
@@ -20,18 +19,11 @@ require_once('jsmin.php');
     $results = new statsModel();
 
     /* Presentation */
-	
-    /** This is a little messy, maybe move it to a separate .js */
 	  	    
     $script = '<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <script src="js/markerclusterer.js"></script>
-    <style type="text/css">
-      body { height: 100%; padding: 0 }
-      #map_canvas { height: 100% }
-    </style>
-    <script type="text/javascript"
-      src="http://maps.googleapis.com/maps/api/js?key='.$GLOBALS['googlemapapikey'].'&amp;sensor=false">
-    </script>
+    <style type="text/css">body{height:100%;padding:0}#map_canvas{height:100%}</style>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key='.$GLOBALS['googlemapapikey'].'&amp;sensor=false"></script>
     <script type="text/javascript">
       function initialize() {
         var myOptions = {
@@ -64,7 +56,6 @@ require_once('jsmin.php');
 			var info = new google.maps.MVCObject;
 			info.set(\'position\', cluster.center_);
 
-			//----
 			//Get markers
 			var markers = cluster.getMarkers();
 
@@ -73,8 +64,6 @@ require_once('jsmin.php');
 			for(var i = 0; i < markers.length; i++) {
 				content += markers[i].getTitle()+"<br/>";
 			}
-			//----
-
 
 			var infowindow = new google.maps.InfoWindow();
 			infowindow.close();
@@ -100,12 +89,11 @@ require_once('jsmin.php');
     $script = JSMin::minify($script);
 	
     $out = Template::header("Map",$script);
-    $out .= '<div id="map">';
-    $out .= '<div id="map_canvas" style="width:100%; height:100%"></div>';
-    $out .= '</div>';
-    
-    $out .= '<script type="text/javascript">initialize()</script>';
-        
+    $out .= '<div id="map">
+		<div id="map_canvas" style="width:100%; height:100%"></div>
+	     </div>
+             <script type="text/javascript">initialize()</script>';
+
     $out .= Template::footer();
     
     $file = fopen($cache,'w');

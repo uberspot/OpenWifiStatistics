@@ -1,7 +1,5 @@
 <?php
-
 class Template {
-	
 	public static function header($title="",$script="") {
 		
 		if(!empty($title))

@@ -11,9 +11,9 @@ if(file_exists($cache)) {
 	}
 }
 
-require_once('statsModel.php');
-require_once('templates/template.php');
-require_once('vendors.php');
+require('statsModel.php');
+require('templates/template.php');
+require('vendors.php');
 
 	$script = '<script type="text/javascript" src="js/awesomechart.js"></script>';
 	$out = Template::header("Statistics",$script);
@@ -23,17 +23,14 @@ require_once('vendors.php');
 	$stats = $results->getStats();
 	$out .= "<h1>General Info</h1><br/>";
 	$out .= "<strong>Total scans: </strong>".$stats['total'];
-	$out .= " <strong> Distinct wifis: </strong>".$stats['totalwifi']."<hr/>";
-	$out .= "<h1>Frequency Statistics</h1><br/>";
-	$out .= '
+	$out .= "<strong> Distinct wifis: </strong>".$stats['totalwifi']."<hr/>";
+	$out .= '<h1>Frequency Statistics</h1><br/>
 		<div class="charts_container">
-
             <canvas id="frequencyCanvas" width="600" height="400">
                 Your web-browser does not support the HTML 5 canvas element.
             </canvas>
-
 		</div>';
-		
+
 	$datas = "";
 	$labels = "";
 	$i=0;
@@ -41,14 +38,13 @@ require_once('vendors.php');
 		if($i > 9) break; $i++;
 		if ($datas == "") {
 			$datas .= $data;
-			$labels .= "'$frequency'";
+			$labels .= "$frequency";
 		}
 		else {			
 			$datas .= ','.$data;
-			$labels .= ','."'$frequency'";
+			$labels .= ','."$frequency";
 		}
 	}
-		
 	$out .= '
 	<script type="text/javascript">
 	var freq = new AwesomeChart(\'frequencyCanvas\');
@@ -58,15 +54,11 @@ require_once('vendors.php');
             freq.draw();
 	</script>';
 	
-	$out .= "<hr><h1>Access Point Vendors</h1><br/>";
-	
-	$out .= '
+	$out .= '<hr><h1>Access Point Vendors</h1><br/>
 		<div class="charts_container">
-
             <canvas id="vendorsCanvas" width="600" height="600">
                 Your web-browser does not support the HTML 5 canvas element.
             </canvas>
-
 		</div>';
 	
 	$datas = "";
@@ -99,15 +91,14 @@ require_once('vendors.php');
 		}
 	}
 	
-	$out .= '
-	<script type="text/javascript">
+	$out .= '<script type="text/javascript">
 	var vendors = new AwesomeChart(\'vendorsCanvas\');
-			vendors.chartType = "pie";
-            vendors.title = "10 Most Popular AP Vendors";
-            vendors.colors = [\'#006CFF\', \'#FF6600\', \'#34A038\', \'#945D59\', \'#93BBF4\', \'#F493B8\' ,\'#e3e123\',\'#f123cc\',\'#ccc\'];
-            vendors.data = ['.$datas.'];
-            vendors.labels = ['.$labels.'];
-            vendors.draw();
+	vendors.chartType = "pie";
+        vendors.title = "10 Most Popular AP Vendors";
+        vendors.colors = [\'#006CFF\', \'#FF6600\', \'#34A038\', \'#945D59\', \'#93BBF4\', \'#F493B8\' ,\'#e3e123\',\'#f123cc\',\'#ccc\'];
+        vendors.data = ['.$datas.'];
+        vendors.labels = ['.$labels.'];
+        vendors.draw();
 	</script>';
 	
 	$out .= '<table><tr class=\'vendors\'><th>Vendor</th><th>Description</th><th>Count</th></tr>';
@@ -118,15 +109,11 @@ require_once('vendors.php');
 	}
 	$out .= '</table><hr/>';
 	
-	$out .= "<h1>Security</h1><br/>";
-	
-	$out .= '
+	$out .= '<h1>Security</h1><br/>
 		<div class="charts_container">
-
             <canvas id="secCanvas" width="800" height="800">
                 Your web-browser does not support the HTML 5 canvas element.
             </canvas>
-
 		</div>';
 		
 	$datas = "";
@@ -144,39 +131,34 @@ require_once('vendors.php');
 		}
 	}
 		
-	$out .= '
-	<script type="text/javascript">
+	$out .= '<script type="text/javascript">
 	var sec = new AwesomeChart(\'secCanvas\');
-			sec.chartType = "horizontal bars";
-            sec.title = "8 Most Popular Security Settings";
-            sec.data = ['.$datas.'];
-            sec.labels = ['.$labels.'];
-            sec.draw();
+	sec.chartType = "horizontal bars";
+        sec.title = "8 Most Popular Security Settings";
+        sec.data = ['.$datas.'];
+        sec.labels = ['.$labels.'];
+        sec.draw();
 	</script>';
 	
 	$out .= "<hr/>";
 	
-	$out .= '
-		<div class="charts_container">
-
+	$out .= '<div class="charts_container">
             <canvas id="openCanvas" width="500" height="500">
                 Your web-browser does not support the HTML 5 canvas element.
             </canvas>
-
 		</div>';
 		
-	$out .= '
-	<script type="text/javascript">
+	$out .= '<script type="text/javascript">
 	var open = new AwesomeChart(\'openCanvas\');
-            open.title = "Open wifi vs Protected";
-            open.data = ['.$stats['totalopen'].','.($stats['totalwifi']-$stats['totalopen']).'];
-            open.labels = [\'Open\',\'Protected\'];
-            open.draw();
+        open.title = "Open wifi vs Protected";
+        open.data = ['.$stats['totalopen'].','.($stats['totalwifi']-$stats['totalopen']).'];
+        open.labels = [\'Open\',\'Protected\'];
+        open.draw();
 	</script>';
 	
 	$out .= '<p><strong>'.(number_format(($stats['totalopen']/$stats['totalwifi'])*100, 3, '.', '')).'%</strong> totaly unprotected wifis</p>';
 	
-	$out .= "<h2>% unsecure networks</h2><br/>";
+	$out .= "<h2>% of unsecure networks</h2><br/>";
 	
 	$out .= Template::contentEnd();
 	$out .= Template::footer();

@@ -12,7 +12,6 @@
  * Permission is hereby granted to use this version of the library under the
  * same terms as jsmin.c, which has the following license:
  *
- * --
  * Copyright (c) 2002 Douglas Crockford  (www.crockford.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -34,7 +33,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * --
  *
  * @package JSMin
  * @author Ryan Grove <ryan@wonko.com>
@@ -60,52 +58,16 @@ class JSMin {
   protected $lookAhead   = null;
   protected $output      = '';
 
-  // -- Public Static Methods --------------------------------------------------
-
-  /**
-   * Minify Javascript
-   *
-   * @uses __construct()
-   * @uses min()
-   * @param string $js Javascript to be minified
-   * @return string
-   */
   public static function minify($js) {
     $jsmin = new JSMin($js);
     return $jsmin->min();
   }
 
-  // -- Public Instance Methods ------------------------------------------------
-
-  /**
-   * Constructor
-   *
-   * @param string $input Javascript to be minified
-   */
   public function __construct($input) {
     $this->input       = str_replace("\r\n", "\n", $input);
     $this->inputLength = strlen($this->input);
   }
 
-  // -- Protected Instance Methods ---------------------------------------------
-
-  /**
-   * Action -- do something! What to do is determined by the $command argument.
-   *
-   * action treats a string as a single character. Wow!
-   * action recognizes a regular expression if it is preceded by ( or , or =.
-   *
-   * @uses next()
-   * @uses get()
-   * @throws JSMinException If parser errors are found:
-   *         - Unterminated string literal
-   *         - Unterminated regular expression set in regex literal
-   *         - Unterminated regular expression literal
-   * @param int $command One of class constants:
-   *      ACTION_KEEP_A      Output A. Copy B to A. Get the next B.
-   *      ACTION_DELETE_A    Copy B to A. Get the next B. (Delete A).
-   *      ACTION_DELETE_A_B  Get the next B. (Delete B).
-  */
   protected function action($command) {
     switch($command) {
       case self::ACTION_KEEP_A:
@@ -184,11 +146,6 @@ class JSMin {
     }
   }
 
-  /**
-   * Get next char. Convert ctrl char to space.
-   *
-   * @return string|null
-   */
   protected function get() {
     $c = $this->lookAhead;
     $this->lookAhead = null;
@@ -213,22 +170,10 @@ class JSMin {
     return ' ';
   }
 
-  /**
-   * Is $c a letter, digit, underscore, dollar sign, or non-ASCII character.
-   *
-   * @return bool
-   */
   protected function isAlphaNum($c) {
     return ord($c) > 126 || $c === '\\' || preg_match('/^[\w\$]$/', $c) === 1;
   }
 
-  /**
-   * Perform minification, return result
-   *
-   * @uses action()
-   * @uses isAlphaNum()
-   * @return string
-   */
   protected function min() {
     $this->a = "\n";
     $this->action(self::ACTION_DELETE_A_B);
@@ -306,19 +251,9 @@ class JSMin {
           }
       }
     }
-
     return $this->output;
   }
 
-  /**
-   * Get the next character, skipping over comments. peek() is used to see
-   *  if a '/' is followed by a '/' or '*'.
-   *
-   * @uses get()
-   * @uses peek()
-   * @throws JSMinException On unterminated comment.
-   * @return string
-   */
   protected function next() {
     $c = $this->get();
 
@@ -358,18 +293,11 @@ class JSMin {
     return $c;
   }
 
-  /**
-   * Get next char. If is ctrl character, translate to a space or newline.
-   *
-   * @uses get()
-   * @return string|null
-   */
   protected function peek() {
     $this->lookAhead = $this->get();
     return $this->lookAhead;
   }
 }
 
-// -- Exceptions ---------------------------------------------------------------
 class JSMinException extends Exception {}
 ?>

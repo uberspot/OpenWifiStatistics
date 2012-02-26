@@ -1,5 +1,4 @@
 <?php
-
 require_once('manuf.php');
 
 function getVendor($mac) {
@@ -12,5 +11,4 @@ function getVendor($mac) {
 	}
 	return array('mac' => $mac, 'brand' => 'Unknown', 'description' => '-');
 }
-
 ?>
