@@ -83,7 +83,7 @@ public class MonitoringService extends Service {
 	
 	private ResultUploader formUploader;
 	
-	private boolean autoUpload;
+	private boolean autoUpload, uploading;
 	
 	private StorageUtils storageUtils;
 	
@@ -166,6 +166,7 @@ public class MonitoringService extends Service {
     	lastProvider = "network";
     	
 		formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
+		uploading = false;
 		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		
@@ -243,14 +244,22 @@ public class MonitoringService extends Service {
 	 * it deletes it from the cached lists.
 	 */
 	public void uploadResults() {
-		Iterator<Entry<String, EScanResult>> iterator = scanResults.entrySet().iterator();
-		while(iterator.hasNext()) {
-			EScanResult result = iterator.next().getValue();
-			if(formUploader.send(result)) {
-				iterator.remove();
-			}
+		Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
+		if(!uploading) {
+			uploading = true;
+			timer.schedule(new TimerTask(){
+				@Override public void run() {
+					Iterator<Entry<String, EScanResult>> iterator = scanResults.entrySet().iterator();
+					while(iterator.hasNext()) {
+						EScanResult result = iterator.next().getValue();
+						if(formUploader.send(result)) {
+							iterator.remove();
+						}
+					}
+					storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+					uploading = false;
+				}}, 500);
 		}
-		storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
 	}
 	
 	public WifiInfo getWifiInfo(){

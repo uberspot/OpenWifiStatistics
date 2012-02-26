@@ -8,6 +8,10 @@
 package com.ows.OpenWifiStatistics;
 
 public final class R {
+    public static final class array {
+        public static final int usage_scenarios=0x7f050000;
+        public static final int usage_values=0x7f050001;
+    }
     public static final class attr {
     }
     public static final class drawable {
@@ -15,17 +19,17 @@ public final class R {
         public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static final int mainlayout=0x7f070009;
-        public static final int mapview=0x7f07000a;
-        public static final int measureConnection=0x7f070007;
-        public static final int owsIcon=0x7f070004;
-        public static final int results=0x7f070003;
-        public static final int scan=0x7f070002;
-        public static final int scrollView1=0x7f070000;
-        public static final int settings=0x7f070008;
-        public static final int textView1=0x7f070001;
-        public static final int toggleMonitoring=0x7f070005;
-        public static final int uploadResults=0x7f070006;
+        public static final int mainlayout=0x7f080009;
+        public static final int mapview=0x7f08000a;
+        public static final int measureConnection=0x7f080007;
+        public static final int owsIcon=0x7f080004;
+        public static final int results=0x7f080003;
+        public static final int scan=0x7f080002;
+        public static final int scrollView1=0x7f080000;
+        public static final int settings=0x7f080008;
+        public static final int textView1=0x7f080001;
+        public static final int toggleMonitoring=0x7f080005;
+        public static final int uploadResults=0x7f080006;
     }
     public static final class layout {
         public static final int connectiontest=0x7f030000;
@@ -34,22 +38,22 @@ public final class R {
         public static final int wifimappage=0x7f030003;
     }
     public static final class string {
-        public static final int app_name=0x7f050000;
-        public static final int location_ttl=0x7f05000c;
-        public static final int lscan_interval=0x7f05000b;
-        public static final int measure_connection=0x7f050004;
-        public static final int scan=0x7f050007;
-        public static final int scan_results=0x7f050006;
-        public static final int settings=0x7f050005;
-        public static final int start_monitoring=0x7f050001;
-        public static final int stop_monitoring=0x7f050002;
-        public static final int upload_interval=0x7f05000a;
-        public static final int upload_results=0x7f050003;
-        public static final int view_results=0x7f050008;
-        public static final int wscan_interval=0x7f050009;
+        public static final int app_name=0x7f060000;
+        public static final int location_ttl=0x7f06000c;
+        public static final int lscan_interval=0x7f06000b;
+        public static final int measure_connection=0x7f060004;
+        public static final int scan=0x7f060007;
+        public static final int scan_results=0x7f060006;
+        public static final int settings=0x7f060005;
+        public static final int start_monitoring=0x7f060001;
+        public static final int stop_monitoring=0x7f060002;
+        public static final int upload_interval=0x7f06000a;
+        public static final int upload_results=0x7f060003;
+        public static final int view_results=0x7f060008;
+        public static final int wscan_interval=0x7f060009;
     }
     public static final class style {
-        public static final int ButtonText=0x7f060000;
+        public static final int ButtonText=0x7f070000;
     }
     public static final class xml {
         public static final int settings=0x7f040000;

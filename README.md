@@ -3,7 +3,7 @@ OpenWifiStatistics
 
 OpenWifiStatistics is an Android application used to scan wifi networks, 
 gather statistics about them (including location) and upload the data to a
-server for analysis. It's still under development.
+server for analysis.
 
 License
 -------
