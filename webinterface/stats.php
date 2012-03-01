@@ -158,8 +158,6 @@ require('vendors.php');
 	
 	$out .= '<p><strong>'.(number_format(($stats['totalopen']/$stats['totalwifi'])*100, 3, '.', '')).'%</strong> totaly unprotected wifis</p>';
 	
-	$out .= "<h2>% of unsecure networks</h2><br/>";
-	
 	$out .= Template::contentEnd();
 	$out .= Template::footer();
 	
