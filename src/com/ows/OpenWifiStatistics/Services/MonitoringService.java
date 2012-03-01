@@ -1,8 +1,6 @@
 package com.ows.OpenWifiStatistics.Services;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,9 +79,8 @@ public class MonitoringService extends Service {
 	
 	public ConcurrentHashMap<String, EScanResult> getScanResults() { return scanResults; }
 	
-	private ResultUploader formUploader;
-	
-	private boolean autoUpload, uploading;
+	private boolean autoUpload;
+	public static boolean uploading;
 	
 	private StorageUtils storageUtils;
 	
@@ -165,7 +162,6 @@ public class MonitoringService extends Service {
     	longitude = LocationFinder.defaultLongitude;
     	lastProvider = "network";
     	
-		formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
 		uploading = false;
 		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -245,21 +241,7 @@ public class MonitoringService extends Service {
 	 */
 	public void uploadResults() {
 		Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
-		if(!uploading) {
-			uploading = true;
-			timer.schedule(new TimerTask(){
-				@Override public void run() {
-					Iterator<Entry<String, EScanResult>> iterator = scanResults.entrySet().iterator();
-					while(iterator.hasNext()) {
-						EScanResult result = iterator.next().getValue();
-						if(formUploader.send(result)) {
-							iterator.remove();
-						}
-					}
-					storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
-					uploading = false;
-				}}, 500);
-		}
+		timer.schedule(new ForkedUploadTask(), 500);
 	}
 	
 	public WifiInfo getWifiInfo(){
@@ -297,5 +279,17 @@ public class MonitoringService extends Service {
         	try { Thread.sleep(locationTaskTTL); } catch (InterruptedException e) { }
         	handler.sendEmptyMessage(2);
         }
+    }
+    
+    private class ForkedUploadTask extends TimerTask {
+		@Override public void run() {
+			if(!MonitoringService.uploading) {
+				MonitoringService.uploading = true;
+				ResultUploader formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
+				formUploader.sendAll(scanResults);
+				storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+				MonitoringService.uploading = false;
+			}
+		}
     }
 }

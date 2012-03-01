@@ -2,7 +2,10 @@ package com.ows.OpenWifiStatistics.Services;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,6 +27,19 @@ public class ResultUploader {
 	
 	public void setURL(String url) {
 		this.url = url;
+	}
+	
+	/** Sends all the scan results
+	 * @param scanResults
+	 */
+	public void sendAll(ConcurrentHashMap<String, EScanResult> scanResults) {
+		Iterator<Entry<String, EScanResult>> iterator = scanResults.entrySet().iterator();
+		while(iterator.hasNext()) {
+			EScanResult result = iterator.next().getValue();
+			if(send(result)) {
+				iterator.remove();
+			}
+		}
 	}
 	
 	/** Sends the given result to the URL via http connection

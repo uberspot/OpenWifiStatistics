@@ -1,7 +1,13 @@
 package com.ows.OpenWifiStatistics;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.ows.OpenWifiStatistics.R;
+import com.ows.OpenWifiStatistics.Services.EScanResult;
 import com.ows.OpenWifiStatistics.Services.MonitoringService;
+import com.ows.OpenWifiStatistics.Services.ResultUploader;
 
 import Utils.StorageUtils;
 import android.app.Activity;
@@ -13,8 +19,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class StartPage extends Activity {
-	
-	//private boolean monitoringStarted;
 	
 	private StorageUtils storage;
 	private String prefName = "servicestarted";
@@ -49,7 +53,22 @@ public class StartPage extends Activity {
         if(Globals.service!=null) {
         	Globals.service.uploadResults();
         } else {
-        	Toast.makeText(this,"Start monitoring to upload", Toast.LENGTH_SHORT).show();
+        	Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
+        	(new Timer()).schedule(new TimerTask() {
+        		@SuppressWarnings("unchecked")
+				@Override public void run() {
+        			if(!MonitoringService.uploading) {
+        				MonitoringService.uploading = true;
+        				StorageUtils storageUtils = new StorageUtils(getApplicationContext());
+        				ConcurrentHashMap<String, EScanResult> scanResults = 
+        						(ConcurrentHashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
+        				ResultUploader formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
+        				formUploader.sendAll(scanResults);
+        				storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+        				MonitoringService.uploading = false;
+        			}
+        		}
+        	}, 500);
         }
     }
     
