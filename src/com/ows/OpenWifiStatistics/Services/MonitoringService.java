@@ -1,8 +1,10 @@
 package com.ows.OpenWifiStatistics.Services;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.ows.OpenWifiStatistics.Globals;
@@ -41,7 +43,7 @@ public class MonitoringService extends Service {
 	private Handler handler = new Handler(){
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
-        		case 0: 
+        		case 0:
         			@SuppressWarnings("unchecked")
 					List<ScanResult> results = (List<ScanResult>) msg.obj;
         			
@@ -54,13 +56,8 @@ public class MonitoringService extends Service {
         				} else if(scanResults.get(result.BSSID).level <= result.level)
     						scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
         			}
-        			
-        			if(uiHandler!=null) {
-	        			Message message = new Message();
-	        			message.what = 1;
-	        			message.obj = results;
-	        			uiHandler.sendMessage(message);
-        			}
+        			if(uiHandler!=null)
+        				uiHandler.sendEmptyMessage(1);
         			break;
         		case 1:
         			locationFinder.startListening();
@@ -80,7 +77,7 @@ public class MonitoringService extends Service {
 	public ConcurrentHashMap<String, EScanResult> getScanResults() { return scanResults; }
 	
 	private boolean autoUpload;
-	public static boolean uploading;
+	public static boolean uploading = false;
 	
 	private StorageUtils storageUtils;
 	
@@ -93,7 +90,7 @@ public class MonitoringService extends Service {
 	BroadcastReceiver receiver;
 	
 	/** Schedules autoupload tasks and wifi scan tasks */
-	Timer timer;
+	Timer scanTimer, uploadTimer, locationTimer, saveTimer;
 
 	/** Location stuff */
 	private LocationFinder locationFinder;
@@ -121,7 +118,7 @@ public class MonitoringService extends Service {
     			if(uiHandler!=null)
     				uiHandler.sendEmptyMessage(2);
 	        }
-			System.out.println("Location: " + latitude + " " + longitude);
+			//System.out.println("Location: " + latitude + " " + longitude);
 		}
 
 		public void onProviderDisabled(String provider) {
@@ -148,12 +145,15 @@ public class MonitoringService extends Service {
 		
 		scanCounter = APCounter = 0;
 		
-		scanResults = (ConcurrentHashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
+		scanResults = (ConcurrentHashMap<String, EScanResult>) storageUtils.loadObjectFromInternalStorage("scanresults");
 		
 		if(scanResults==null)
 			scanResults = new ConcurrentHashMap<String, EScanResult>(1000);
 
-		timer = new Timer("Service Timer");
+		scanTimer = new Timer("Scan Timer");
+		uploadTimer = new Timer("Upload Timer");
+		locationTimer = new Timer("Location Timer");
+		saveTimer = new Timer("AutoSave Timer");
 		
 		//start listening for current location
 		locationFinder = new LocationFinder((LocationManager) getSystemService(Context.LOCATION_SERVICE), listener);
@@ -161,8 +161,6 @@ public class MonitoringService extends Service {
 		latitude = LocationFinder.defaultLatitude;
     	longitude = LocationFinder.defaultLongitude;
     	lastProvider = "network";
-    	
-		uploading = false;
 		
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		
@@ -172,12 +170,12 @@ public class MonitoringService extends Service {
 	
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
-	    timer.schedule( new ScanTask() , 5000, scanTimeout);
-	    timer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
-	    timer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
-	    timer.schedule(new TimerTask() {
+	    scanTimer.schedule( new ScanTask() , 5000, scanTimeout);
+	    uploadTimer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
+	    locationTimer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
+	    saveTimer.schedule(new TimerTask() {
 			@Override public void run() {
-				storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+				cacheInternallyResults();
 			}
 	    }, 60000, 60000);
 		Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
@@ -214,8 +212,11 @@ public class MonitoringService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(receiver);
-		timer.cancel();
-		storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+		scanTimer.cancel();
+		uploadTimer.cancel();
+		locationTimer.cancel();
+		saveTimer.cancel();
+		cacheInternallyResults();
 		if(locationFinder.startedListening)
 			locationFinder.stopListening();
 		Globals.service = null;
@@ -240,8 +241,7 @@ public class MonitoringService extends Service {
 	 * it deletes it from the cached lists.
 	 */
 	public void uploadResults() {
-		Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
-		timer.schedule(new ForkedUploadTask(), 500);
+		uploadTimer.schedule(new ForkedUploadTask(), 200);
 	}
 	
 	public WifiInfo getWifiInfo(){
@@ -252,10 +252,28 @@ public class MonitoringService extends Service {
 		return (wifi==null) ? null : wifi.getConfiguredNetworks();
 	}
 	
+	public static String resultsToCSVString(ConcurrentHashMap<String, EScanResult> results) {
+		StringBuffer csv = new StringBuffer();
+		csv.append("bssid;capabilities;ssid;provider;frequency;level;longitude;latitude\n");
+		Iterator<Entry<String, EScanResult>> iterator = results.entrySet().iterator();
+		while(iterator.hasNext()) {
+			EScanResult result = iterator.next().getValue();
+			csv.append("\"" + result.BSSID + "\";");
+			csv.append("\"" + result.capabilities + "\";");
+			csv.append("\"" + result.SSID + "\";");
+			csv.append("\"" + result.provider + "\";");
+			csv.append("\"" + result.frequency + "\";");
+			csv.append("\"" + result.level + "\";");
+			csv.append("\"" + result.longitude + "\";");
+			csv.append("\"" + result.latitude + "\"\n");
+		}
+		return csv.toString();
+	}
+	
 	/* TASKS */
 	
 	/** Task that just performs a scan. */
-    private class ScanTask extends TimerTask {
+     private class ScanTask extends TimerTask {
         @Override public void run() {
         	doScan();
         }
@@ -287,9 +305,13 @@ public class MonitoringService extends Service {
 				MonitoringService.uploading = true;
 				ResultUploader formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
 				formUploader.sendAll(scanResults);
-				storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+				cacheInternallyResults();
 				MonitoringService.uploading = false;
 			}
-		}
+		}		
     }
+    
+    public void cacheInternallyResults() {
+		storageUtils.saveObjectToInternalStorage(scanResults, "scanresults");
+	}
 }

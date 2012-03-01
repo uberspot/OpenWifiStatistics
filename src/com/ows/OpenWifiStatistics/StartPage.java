@@ -14,6 +14,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -22,6 +24,22 @@ public class StartPage extends Activity {
 	
 	private StorageUtils storage;
 	private String prefName = "servicestarted";
+	
+	/* Handles the messages sent from the BuzzService */
+    private Handler handler = new Handler(){
+        @Override public void handleMessage(Message msg) {
+        	switch(msg.what) {
+			        case 0:
+			        	String text = (String) msg.obj;
+			        	if (text!=null)
+			        		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+			        	break;
+			        default:
+			            break;
+	        }
+            super.handleMessage(msg);
+        }
+    };
 	
     /** Called when the activity is first created. */
     @Override
@@ -45,26 +63,41 @@ public class StartPage extends Activity {
 		this.finish();
 	}
     
-    public void goToMeasureConnection(View v) {
-        startActivity(new Intent(this, MeasureConnectionPage.class));
+    public void exportResults(View v) {
+    	if(Globals.service!=null) {
+        	Globals.service.cacheInternallyResults();
+        }
+    	(new Timer("SD Saving Timer")).schedule(new TimerTask() {
+    		@SuppressWarnings("unchecked")
+			@Override public void run() {
+				ConcurrentHashMap<String, EScanResult> scanResults = 
+						(ConcurrentHashMap<String, EScanResult>) storage.loadObjectFromInternalStorage("scanresults");
+				if(StorageUtils.hasExternalStorage(true)) {
+					int i = 0;
+					while(!storage.saveStringToExternalStorage(MonitoringService.resultsToCSVString(scanResults), 
+														"OpenWifiStatistics", ++i + ".csv", false) && i < 999) { }
+					notifyAbout("Saved stats as " + i + ".csv");
+				} else 
+					notifyAbout("Can't find SD card!");
+    		}
+    	}, 300);
     }
     
     public void uploadResults(View v) {
+		Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
         if(Globals.service!=null) {
         	Globals.service.uploadResults();
         } else {
-        	Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
-        	(new Timer()).schedule(new TimerTask() {
+        	(new Timer("Temp Upload Timer")).schedule(new TimerTask() {
         		@SuppressWarnings("unchecked")
 				@Override public void run() {
         			if(!MonitoringService.uploading) {
         				MonitoringService.uploading = true;
-        				StorageUtils storageUtils = new StorageUtils(getApplicationContext());
         				ConcurrentHashMap<String, EScanResult> scanResults = 
-        						(ConcurrentHashMap<String, EScanResult>) storageUtils.loadObjectFromInnerStorage("scanresults");
+        						(ConcurrentHashMap<String, EScanResult>) storage.loadObjectFromInternalStorage("scanresults");
         				ResultUploader formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
         				formUploader.sendAll(scanResults);
-        				storageUtils.saveObjectToInnerStorage(scanResults, "scanresults");
+        				storage.saveObjectToInternalStorage(scanResults, "scanresults");
         				MonitoringService.uploading = false;
         			}
         		}
@@ -94,5 +127,13 @@ public class StartPage extends Activity {
     	}
         
     }
+    
+    private void notifyAbout(String message) {
+		if(handler!=null){
+			Message msg = Message.obtain();
+			msg.obj = message;
+    		handler.sendMessage(msg);
+    	}
+	}
 
 }

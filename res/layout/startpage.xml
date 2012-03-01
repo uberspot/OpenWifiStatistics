@@ -42,11 +42,11 @@
 		        android:onClick="uploadResults"
 		        android:text="@string/upload_results" />
 		    <Button
-		        android:id="@+id/measureConnection"
-		        style="@style/ButtonText" 
+		        android:id="@+id/exportResults"
+		        style="@style/ButtonText"
             	android:background="@drawable/btn_white"
-		        android:onClick="goToMeasureConnection"
-		        android:text="@string/measure_connection" />
+		        android:onClick="exportResults"
+		        android:text="@string/export_results" />
 		
 		    <Button
 		        android:id="@+id/settings"

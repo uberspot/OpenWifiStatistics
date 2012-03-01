@@ -2,6 +2,7 @@ package Utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,6 +13,7 @@ import java.io.ObjectOutputStream;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.os.Environment;
 
 /** Class containing some useful functions for easy usage of the storage capabilities in an Android device.
  */
@@ -83,7 +85,7 @@ public class StorageUtils extends ContextWrapper {
 		}
 	}
 	
-	public boolean saveObjectToInnerStorage(Object obj,  String fileName) {
+	public boolean saveObjectToInternalStorage(Object obj,  String fileName) {
 		ObjectOutputStream output = null;
 		try {
 			output = new ObjectOutputStream( new BufferedOutputStream( openFileOutput(fileName, Context.MODE_PRIVATE) ) );
@@ -99,7 +101,7 @@ public class StorageUtils extends ContextWrapper {
 		return false;
 	}
 	
-	public Object loadObjectFromInnerStorage(String fileName) {
+	public Object loadObjectFromInternalStorage(String fileName) {
 		Object obj = null; ObjectInputStream input = null;
 		try {
 			input = new ObjectInputStream ( new BufferedInputStream( openFileInput(fileName) ) );
@@ -121,5 +123,98 @@ public class StorageUtils extends ContextWrapper {
 	
 	public String getPreference(String prefName, String valueName){
 	      return getSharedPreferences(prefName, Context.MODE_PRIVATE).getString(valueName, "");
+	}
+
+	/** Save the given object to a file in external storage
+	 * @param obj the object to save
+	 * @param directory the directory in the sd card to save it into
+	 * @param fileName the name of the file
+	 * @param overwrite if set to true the file will be overwritter if it already exists
+	 * @return true if the file was written succesfully, false otherwise
+	 */
+	public boolean saveObjectToExternalStorage(Object obj, String directory, String fileName, boolean overwrite) {
+		if(!directory.startsWith("/"))
+			directory = "/" + directory;
+
+		File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + directory);
+		if(!dir.exists()) dir.mkdirs();
+		
+		File file = new File(dir, fileName);
+		if(file.exists() && !overwrite)
+			return false;
+		ObjectOutputStream output = null;
+		try {
+			output = new ObjectOutputStream( new BufferedOutputStream( new FileOutputStream(file) ) );
+			output.writeObject(obj);
+			output.flush();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		} finally {
+			if(output!=null)
+				try { output.close(); } catch (IOException e) { }
+		}
+		return false;
+	}
+	
+	public Object loadObjectFromExternalStorage(String fileName) {
+		if(!fileName.startsWith("/"))
+			fileName = "/" + fileName;
+		
+		File file = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + fileName);
+		Object obj = null; ObjectInputStream input = null;
+		try {
+			input = new ObjectInputStream ( new BufferedInputStream( new FileInputStream(file) ) );
+			obj = input.readObject();
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		} finally {
+			if(input!=null)
+				try { input.close(); } catch (IOException e) { }
+		}
+		return obj;
+	}
+	
+	public static boolean hasExternalStorage(boolean requireWriteAccess) {
+	    String state = Environment.getExternalStorageState();
+
+	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+	        return true;
+	    } else if (!requireWriteAccess && Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+	        return true;
+	    }
+	    return false;
+	}
+	
+	/** Save the given string to a file in external storage
+	 * @param obj the object to save
+	 * @param directory the directory in the sd card to save it into
+	 * @param fileName the name of the file
+	 * @param overwrite if set to true the file will be overwritter if it already exists
+	 * @return true if the file was written succesfully, false otherwise
+	 */
+	public boolean saveStringToExternalStorage(String obj, String directory, String fileName, boolean overwrite) {
+		if(!directory.startsWith("/"))
+			directory = "/" + directory;
+
+		File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + directory);
+		if(!dir.exists()) dir.mkdirs();
+		
+		File file = new File(dir, fileName);
+		if(file.exists() && !overwrite)
+			return false;
+		BufferedOutputStream output = null;
+		try {
+			output = new BufferedOutputStream( new FileOutputStream(file) );
+			output.write(obj.getBytes());
+			output.flush();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		} finally {
+			if(output!=null)
+				try { output.close(); } catch (IOException e) { }
+		}
+		return false;
 	}
 }

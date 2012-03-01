@@ -13,4 +13,5 @@
 	<string name="upload_interval">Upload data interval</string>
 	<string name="lscan_interval">Location scan interval</string>
 	<string name="location_ttl">Location scan time</string>
+	<string name="export_results">Export results to sd card</string>
 </resources>
