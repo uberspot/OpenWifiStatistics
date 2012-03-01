@@ -76,7 +76,7 @@ public class StartPage extends Activity {
 					int i = 0;
 					while(!storage.saveStringToExternalStorage(MonitoringService.resultsToCSVString(scanResults), 
 														"OpenWifiStatistics", ++i + ".csv", false) && i < 999) { }
-					notifyAbout("Saved stats as " + i + ".csv");
+					notifyAbout("Saved stats is SD as OpenWifiStatistics/" + i + ".csv");
 				} else 
 					notifyAbout("Can't find SD card!");
     		}
