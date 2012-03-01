@@ -254,17 +254,17 @@ public class MonitoringService extends Service {
 	
 	public static String resultsToCSVString(ConcurrentHashMap<String, EScanResult> results) {
 		StringBuffer csv = new StringBuffer();
-		csv.append("bssid;capabilities;ssid;provider;frequency;level;longitude;latitude\n");
+		csv.append("bssid,capabilities,ssid,provider,frequency,level,longitude,latitude\n");
 		Iterator<Entry<String, EScanResult>> iterator = results.entrySet().iterator();
 		while(iterator.hasNext()) {
 			EScanResult result = iterator.next().getValue();
-			csv.append("\"" + result.BSSID + "\";");
-			csv.append("\"" + result.capabilities + "\";");
-			csv.append("\"" + result.SSID + "\";");
-			csv.append("\"" + result.provider + "\";");
-			csv.append("\"" + result.frequency + "\";");
-			csv.append("\"" + result.level + "\";");
-			csv.append("\"" + result.longitude + "\";");
+			csv.append("\"" + result.BSSID + "\",");
+			csv.append("\"" + result.capabilities + "\",");
+			csv.append("\"" + result.SSID + "\",");
+			csv.append("\"" + result.provider + "\",");
+			csv.append("\"" + result.frequency + "\",");
+			csv.append("\"" + result.level + "\",");
+			csv.append("\"" + result.longitude + "\",");
 			csv.append("\"" + result.latitude + "\"\n");
 		}
 		return csv.toString();
