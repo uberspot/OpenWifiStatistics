@@ -1,5 +1,6 @@
 package com.ows.OpenWifiStatistics;
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +77,7 @@ public class StartPage extends Activity {
 					int i = 0;
 					while(!storage.saveStringToExternalStorage(MonitoringService.resultsToCSVString(scanResults), 
 														"OpenWifiStatistics", ++i + ".csv", false) && i < 999) { }
-					notifyAbout("Saved stats is SD as OpenWifiStatistics/" + i + ".csv");
+					notifyAbout("Saved stats is SD as OpenWifiStatistics" + File.separator + i + ".csv");
 				} else 
 					notifyAbout("Can't find SD card!");
     		}

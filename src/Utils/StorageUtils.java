@@ -133,8 +133,8 @@ public class StorageUtils extends ContextWrapper {
 	 * @return true if the file was written succesfully, false otherwise
 	 */
 	public boolean saveObjectToExternalStorage(Object obj, String directory, String fileName, boolean overwrite) {
-		if(!directory.startsWith("/"))
-			directory = "/" + directory;
+		if(!directory.startsWith(File.separator))
+			directory = File.separator + directory;
 
 		File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + directory);
 		if(!dir.exists()) dir.mkdirs();
@@ -158,8 +158,8 @@ public class StorageUtils extends ContextWrapper {
 	}
 	
 	public Object loadObjectFromExternalStorage(String fileName) {
-		if(!fileName.startsWith("/"))
-			fileName = "/" + fileName;
+		if(!fileName.startsWith(File.separator))
+			fileName = File.separator + fileName;
 		
 		File file = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + fileName);
 		Object obj = null; ObjectInputStream input = null;
@@ -194,8 +194,8 @@ public class StorageUtils extends ContextWrapper {
 	 * @return true if the file was written succesfully, false otherwise
 	 */
 	public boolean saveStringToExternalStorage(String obj, String directory, String fileName, boolean overwrite) {
-		if(!directory.startsWith("/"))
-			directory = "/" + directory;
+		if(!directory.startsWith(File.separator))
+			directory = File.separator + directory;
 
 		File dir = new File (Environment.getExternalStorageDirectory().getAbsolutePath() + directory);
 		if(!dir.exists()) dir.mkdirs();
