@@ -8,10 +8,12 @@
     <string name="settings">Settings</string>
     <string name="scan_results">Scan Results</string>
     <string name="scan">Scan</string>
-    <string name="view_results">View Results</string>
+    <string name="view_results">View Online Results</string>
     <string name="wscan_interval">Wifi scan interval</string>
 	<string name="upload_interval">Upload data interval</string>
 	<string name="lscan_interval">Location scan interval</string>
 	<string name="location_ttl">Location scan time</string>
 	<string name="export_results">Export results to sd card</string>
+	<string name="clear_results">Clear cached Results</string>
+	<string name="server_url">Server URL</string>
 </resources>

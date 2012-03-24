@@ -12,11 +12,15 @@ import com.ows.OpenWifiStatistics.Services.ResultUploader;
 
 import Utils.StorageUtils;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -25,6 +29,7 @@ public class StartPage extends Activity {
 	
 	private StorageUtils storage;
 	private String prefName = "servicestarted";
+	private static String serverURL = null;
 	
 	/* Handles the messages sent from the BuzzService */
     private Handler handler = new Handler(){
@@ -47,7 +52,14 @@ public class StartPage extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.startpage);
-        //this.monitoringStarted = false;
+        
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        serverURL = prefs.getString("server_url", MonitoringService.defaultServerUrl);
+		 if(!serverURL.matches("(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/$")) { 
+			 Toast.makeText(this,"Invalid Server url used, using default...", Toast.LENGTH_SHORT).show();
+			 serverURL = MonitoringService.defaultServerUrl; 
+		 }
+        
         storage = new StorageUtils(getApplicationContext());
         String pref = storage.getPreference(prefName, prefName);
         if(pref.equalsIgnoreCase("")) 
@@ -96,7 +108,7 @@ public class StartPage extends Activity {
         				MonitoringService.uploading = true;
         				ConcurrentHashMap<String, EScanResult> scanResults = 
         						(ConcurrentHashMap<String, EScanResult>) storage.loadObjectFromInternalStorage("scanresults");
-        				ResultUploader formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
+        				ResultUploader formUploader = new ResultUploader(serverURL+"wifistats.php");
         				formUploader.sendAll(scanResults);
         				storage.saveObjectToInternalStorage(scanResults, "scanresults");
         				MonitoringService.uploading = false;
@@ -111,7 +123,7 @@ public class StartPage extends Activity {
     }
     
     public void viewResults(View v) {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://uberspot.ath.cx/wifi/results.php")));
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(serverURL+"results.php")));
     }
     
     public void toggleMonitoring(View v) {
@@ -137,4 +149,15 @@ public class StartPage extends Activity {
     	}
 	}
 
-}
+    public void clearResults(View v) {
+    	new AlertDialog.Builder(this)
+    	.setTitle("Confirm")
+    	.setMessage("Are you sure you want to clear cached wifi stats?")
+    	.setIcon(android.R.drawable.ic_dialog_alert)
+    	.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+    	    public void onClick(DialogInterface dialog, int whichButton) {
+    	    	storage.saveObjectToInternalStorage(new ConcurrentHashMap<String, EScanResult>(1000), "scanresults");
+    	    }})
+    	 .setNegativeButton(android.R.string.no, null).show();
+    }
+} 

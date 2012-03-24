@@ -77,6 +77,8 @@ public class MonitoringService extends Service {
 	public ConcurrentHashMap<String, EScanResult> getScanResults() { return scanResults; }
 	
 	private boolean autoUpload;
+	private static String serverURL;
+	public static final String defaultServerUrl = "http://uberspot.ath.cx/wifi/";
 	public static boolean uploading = false;
 	
 	private StorageUtils storageUtils;
@@ -178,13 +180,23 @@ public class MonitoringService extends Service {
 				cacheInternallyResults();
 			}
 	    }, 60000, 60000);
-		Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
+	    if(!wifi.isWifiEnabled()) {
+	    	Toast.makeText(this,"Please enable wifi first!", Toast.LENGTH_SHORT).show();
+	    } else {
+	    	Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
+	    }
 	}
 	
 	public void loadPreferences() {
 		 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		 try {
 			 autoUpload = prefs.getBoolean("autoUpload", true);
+			 serverURL = prefs.getString("server_url", defaultServerUrl);
+			 if(!serverURL.matches("(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/$")) { 
+				 Toast.makeText(this,"Invalid Server url used, using default...", Toast.LENGTH_SHORT).show();
+				 serverURL = defaultServerUrl; 
+			 }
+			 
 			 int usageScenario = Integer.parseInt(prefs.getString("usage_scenario", "1"));
 			 if(usageScenario == 1) {
 				scanTimeout = 30000; uploadTimeout = 420000;
@@ -303,7 +315,7 @@ public class MonitoringService extends Service {
 		@Override public void run() {
 			if(!MonitoringService.uploading) {
 				MonitoringService.uploading = true;
-				ResultUploader formUploader = new ResultUploader("http://uberspot.ath.cx/wifistats.php");
+				ResultUploader formUploader = new ResultUploader(serverURL+"wifistats.php");
 				formUploader.sendAll(scanResults);
 				cacheInternallyResults();
 				MonitoringService.uploading = false;

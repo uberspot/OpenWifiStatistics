@@ -55,5 +55,12 @@
 		        android:onClick="goToSettings"
 		        android:text="@string/settings" />
 		    
+		    <Button
+		        android:id="@+id/clearResults"
+		        style="@style/ButtonText" 
+            	android:background="@drawable/btn_white"
+		        android:onClick="clearResults"
+		        android:text="@string/clear_results" />
+		    
 		</LinearLayout>
 </ScrollView>
