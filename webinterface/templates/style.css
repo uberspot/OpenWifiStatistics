@@ -1,7 +1,7 @@
 html{ height:100%; }
 body{ height:100%; margin:.5em auto; padding:0px; text-align: center; width:90%}
 #menu{ position: fixed; height: 60px; background-color: #5E9AC1; color:white; font-size: 3em; border:2px ridge white; -moz-border-radius:20px;	-webkit-border-radius:20px; khtml-border-radius:20px; border-radius:20px; z-index: 5; width:90%; margin:0px auto; text-align:center; }
-a{ text-decoration:none; color: black; }
+a{ color: black; }
 a.abox{ color: white; }
 a.abox:hover{ text-decoration:underline; }
 .abox{ vertical-align: top; }

@@ -4,7 +4,7 @@ $cache = 'cache/stats.html';
 if(file_exists($cache)) {
 	$fromcreation = date('U')-date ('U',filemtime($cache));
 	//			hours	min		sec
-	$time =    	1   *	15	*	60;//15min
+	$time =    	1   *	30	*	60;//15min
 	if($fromcreation < $time) {
 		echo file_get_contents($cache);
 		exit();

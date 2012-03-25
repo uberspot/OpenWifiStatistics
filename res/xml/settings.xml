@@ -46,7 +46,7 @@
         <EditTextPreference
                 android:name="Server URL"
                 android:summary="The url to which the results will be uploaded (e.g. http://something.com/wi/). Should end with a /"
-                android:defaultValue="http://uberspot.ath.cx/wifi/"
+                android:defaultValue="http://195.251.232.92/wifi/"
                 android:title="@string/server_url"
                 android:key="server_url" />
 </PreferenceScreen>

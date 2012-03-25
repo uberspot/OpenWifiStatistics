@@ -78,7 +78,7 @@ public class MonitoringService extends Service {
 	
 	private boolean autoUpload;
 	private static String serverURL;
-	public static final String defaultServerUrl = "http://uberspot.ath.cx/wifi/";
+	public static final String defaultServerUrl = "http://195.251.232.92/wifi/";
 	public static boolean uploading = false;
 	
 	private StorageUtils storageUtils;
