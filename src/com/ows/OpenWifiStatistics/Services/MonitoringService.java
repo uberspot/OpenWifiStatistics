@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.ows.OpenWifiStatistics.Globals;
 
-import Utils.StorageUtils;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,6 +28,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
+import androidStorageUtils.StorageUtils;
 
 public class MonitoringService extends Service {
 	

@@ -10,7 +10,6 @@ import com.ows.OpenWifiStatistics.Services.EScanResult;
 import com.ows.OpenWifiStatistics.Services.MonitoringService;
 import com.ows.OpenWifiStatistics.Services.ResultUploader;
 
-import Utils.StorageUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -24,6 +23,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import androidStorageUtils.StorageUtils;
 
 public class StartPage extends Activity {
 	
