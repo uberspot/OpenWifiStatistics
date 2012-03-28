@@ -29,7 +29,7 @@
 		        android:text="@string/start_monitoring" />
 			
 		    <Button
-		        android:id="@+id/results"
+		        android:id="@+id/viewResults"
 		        style="@style/ButtonText" 
             	android:background="@drawable/btn_white"
 		        android:onClick="viewResults"
@@ -62,5 +62,16 @@
 		        android:onClick="clearResults"
 		        android:text="@string/clear_results" />
 		    
+		    <View
+			    android:layout_width="fill_parent"
+			    android:layout_height="2dip"
+			    android:layout_margin="2dp"
+			    android:background="#F0FBFC"/>
+		    <TextView
+	            android:id="@+id/results"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_vertical|center_horizontal"
+	            android:text="" />
 		</LinearLayout>
 </ScrollView>

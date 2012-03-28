@@ -22,6 +22,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidStorageUtils.StorageUtils;
 
@@ -40,6 +41,15 @@ public class StartPage extends Activity {
 			        	if (text!=null)
 			        		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 			        	break;
+			        case 1:
+	        			resultsView.setText("Scanned " + Globals.service.scanCounter + " times\n" + 
+	        							    "Found " + Globals.service.APCounter + " total access points\n" + 
+	        								Globals.service.getScanResults().size() + " unique access points\n" + 
+	        								"Current gps position: \n" + "Latitude: " + Globals.service.getLatitude() + 
+	        								" Longitude: " + Globals.service.getLongitude() + "\n");
+	        			
+	        			resultsView.append("" + "\n\n"); //todo: display results in a prettier way 
+	        			break;
 			        default:
 			            break;
 	        }
@@ -47,6 +57,8 @@ public class StartPage extends Activity {
         }
     };
 	
+    private TextView resultsView;
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +80,8 @@ public class StartPage extends Activity {
         	Button button = (Button) findViewById(R.id.toggleMonitoring);
         	button.setText(R.string.stop_monitoring);
         }
+        
+        resultsView = (TextView) findViewById(R.id.results);
     }
     
     @Override
@@ -132,13 +146,24 @@ public class StartPage extends Activity {
     		stopService(new Intent(StartPage.this, MonitoringService.class));
     		button.setText(R.string.start_monitoring);
     		storage.savePreference(prefName, prefName, "false");
+    		if(resultsView!=null) {
+    			resultsView.setText("");
+    		}
     	}else {
             startService(new Intent(StartPage.this, MonitoringService.class));
             button.setText(R.string.stop_monitoring);
             storage.savePreference(prefName, prefName, "true");
-            startActivity(new Intent(this, ScanResultsPage.class));
+            
+            //Set UI handler for service after it starts
+            new Timer().schedule(new TimerTask(){
+    			@Override
+    			public void run() {
+    				if(Globals.service!=null)
+    		        	Globals.service.setUIHandler(handler);
+    			}}, 4000);
     	}
-        
+    	
+    	
     }
     
     private void notifyAbout(String message) {
