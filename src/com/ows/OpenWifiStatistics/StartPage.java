@@ -99,13 +99,17 @@ public class StartPage extends Activity {
 			@Override public void run() {
 				ConcurrentHashMap<String, EScanResult> scanResults = 
 						(ConcurrentHashMap<String, EScanResult>) storage.loadObjectFromInternalStorage("scanresults");
-				if(StorageUtils.hasExternalStorage(true)) {
-					int i = 0;
-					while(!storage.saveStringToExternalStorage(MonitoringService.resultsToCSVString(scanResults), 
-														"OpenWifiStatistics", ++i + ".csv", false) && i < 999) { }
-					notifyAbout("Saved stats is SD as OpenWifiStatistics" + File.separator + i + ".csv");
-				} else 
-					notifyAbout("Can't find SD card!");
+				if(scanResults==null) {
+					notifyAbout("No results to export!");
+				} else { 
+					if(StorageUtils.hasExternalStorage(true)) {
+						int i = 0;
+						while(!storage.saveStringToExternalStorage(MonitoringService.resultsToCSVString(scanResults), 
+															"OpenWifiStatistics", ++i + ".csv", false) && i < 999) { }
+						notifyAbout("Saved stats is SD as OpenWifiStatistics" + File.separator + i + ".csv");
+					} else 
+						notifyAbout("Can't find SD card!");
+				}
     		}
     	}, 300);
     }
