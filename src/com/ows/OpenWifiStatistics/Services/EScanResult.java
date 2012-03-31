@@ -7,9 +7,7 @@ import java.io.Serializable;
 
 import android.net.wifi.ScanResult;
 
-/**
- * @author code
- *
+/** Wrapper class for wifi ScanResults
  */
 public class EScanResult implements Serializable {
 

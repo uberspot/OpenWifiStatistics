@@ -16,6 +16,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
+/** Class used for uploading EScanResults to a remote url via HTTP POST requests.
+ */
 public class ResultUploader {
 	private HttpClient httpclient;
 	private String url;
@@ -29,8 +31,8 @@ public class ResultUploader {
 		this.url = url;
 	}
 	
-	/** Sends all the scan results
-	 * @param scanResults
+	/** Sends all the scan results contained in the given ConcurrentHashMap
+	 * @param scanResults 
 	 */
 	public void sendAll(ConcurrentHashMap<String, EScanResult> scanResults) {
 		Iterator<Entry<String, EScanResult>> iterator = scanResults.entrySet().iterator();

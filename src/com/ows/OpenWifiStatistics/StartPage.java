@@ -29,10 +29,13 @@ import androidStorageUtils.StorageUtils;
 public class StartPage extends Activity {
 	
 	private StorageUtils storage;
+	
+	/** Name of the preference that stores the state of the monitoring service (true for started and false for stopped) */
 	private String prefName = "servicestarted";
+	
 	private static String serverURL = null;
 	
-	/* Handles the messages sent from the BuzzService */
+	/* Handles the messages sent from the MonitoringService */
     private Handler handler = new Handler(){
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
@@ -42,11 +45,11 @@ public class StartPage extends Activity {
 			        		Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 			        	break;
 			        case 1:
-	        			resultsView.setText("Scanned " + Globals.service.scanCounter + " times\n" + 
-	        							    "Found " + Globals.service.APCounter + " total access points\n" + 
-	        								Globals.service.getScanResults().size() + " unique access points\n" + 
-	        								"Current gps position: \n" + "Latitude: " + Globals.service.getLatitude() + 
-	        								" Longitude: " + Globals.service.getLongitude() + "\n");
+	        			resultsView.setText("Scanned " + MonitoringService.service.scanCounter + " times\n" + 
+	        							    "Found " + MonitoringService.service.APCounter + " total access points\n" + 
+	        								MonitoringService.service.getScanResults().size() + " unique access points\n" + 
+	        								"Current gps position: \n" + "Latitude: " + MonitoringService.service.getLatitude() + 
+	        								" Longitude: " + MonitoringService.service.getLongitude() + "\n");
 	        			
 	        			resultsView.append("" + "\n\n"); //todo: display results in a prettier way 
 	        			break;
@@ -57,6 +60,7 @@ public class StartPage extends Activity {
         }
     };
 	
+    /** Displays the results of the monitoring on the bottom portion of the start page */
     private TextView resultsView;
     
     /** Called when the activity is first created. */
@@ -65,6 +69,7 @@ public class StartPage extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.startpage);
         
+        //Load server url from preferences
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         serverURL = prefs.getString("server_url", MonitoringService.defaultServerUrl);
 		 if(!serverURL.matches("(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]/$")) { 
@@ -73,6 +78,7 @@ public class StartPage extends Activity {
 		 }
         
         storage = new StorageUtils(getApplicationContext());
+        
         String pref = storage.getPreference(prefName, prefName);
         if(pref.equalsIgnoreCase("")) 
         	storage.savePreference(prefName, prefName, "false");
@@ -90,9 +96,12 @@ public class StartPage extends Activity {
 		this.finish();
 	}
     
+    /** Called when the button "Export to external storage" is clicked
+     * @param v
+     */
     public void exportResults(View v) {
-    	if(Globals.service!=null) {
-        	Globals.service.cacheInternallyResults();
+    	if(MonitoringService.service!=null) {
+        	MonitoringService.service.saveInternallyCachedResults();
         }
     	(new Timer("SD Saving Timer")).schedule(new TimerTask() {
     		@SuppressWarnings("unchecked")
@@ -114,10 +123,13 @@ public class StartPage extends Activity {
     	}, 300);
     }
     
+    /** Called when the button "Upload results" is clicked
+     * @param v
+     */
     public void uploadResults(View v) {
 		Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
-        if(Globals.service!=null) {
-        	Globals.service.uploadResults();
+        if(MonitoringService.service!=null) {
+        	MonitoringService.service.uploadResults();
         } else {
         	(new Timer("Temp Upload Timer")).schedule(new TimerTask() {
         		@SuppressWarnings("unchecked")
@@ -136,14 +148,23 @@ public class StartPage extends Activity {
         }
     }
     
+    /** Loads settings screen
+     * @param v
+     */
     public void goToSettings(View v) {
         startActivity(new Intent(this, SettingsPage.class)); 
     }
     
+    /** Opens online results page
+     * @param v
+     */
     public void viewResults(View v) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(serverURL+"results.php")));
     }
     
+    /** Starts/stops the monitoring service
+     * @param v
+     */
     public void toggleMonitoring(View v) {
     	Button button = (Button) findViewById(R.id.toggleMonitoring);
     	if(storage.getPreference(prefName, prefName).equalsIgnoreCase("true") ){
@@ -162,22 +183,29 @@ public class StartPage extends Activity {
             new Timer().schedule(new TimerTask(){
     			@Override
     			public void run() {
-    				if(Globals.service!=null)
-    		        	Globals.service.setUIHandler(handler);
+    				if(MonitoringService.service!=null)
+    		        	MonitoringService.service.setUIHandler(handler);
     			}}, 4000);
     	}
     	
     	
     }
     
+    /** Sends a message to the Activities Handler. The handler then displays the given string as a Toast.
+     * @param message the message to display as a Toast.
+     */
     private void notifyAbout(String message) {
 		if(handler!=null){
 			Message msg = Message.obtain();
 			msg.obj = message;
+			msg.what = 0;
     		handler.sendMessage(msg);
     	}
 	}
 
+    /** Called when the "Clear results" button is clicked. Deletes all the locally cached scan results.
+     * @param v
+     */
     public void clearResults(View v) {
     	new AlertDialog.Builder(this)
     	.setTitle("Confirm")

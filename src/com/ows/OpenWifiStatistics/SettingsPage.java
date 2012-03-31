@@ -1,6 +1,7 @@
 package com.ows.OpenWifiStatistics;
 
 import com.ows.OpenWifiStatistics.R;
+import com.ows.OpenWifiStatistics.Services.MonitoringService;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
@@ -16,8 +17,8 @@ public class SettingsPage extends PreferenceActivity {
 	@Override
 	public void onDestroy() {
     	super.onDestroy();
-    	if(Globals.service!=null) {
-        	Globals.service.loadPreferences();
+    	if(MonitoringService.service!=null) {
+        	MonitoringService.service.loadPreferences();
         }
     	Toast.makeText(this,"Restart monitoring for the changes to take effect", Toast.LENGTH_SHORT).show();
 		this.finish();

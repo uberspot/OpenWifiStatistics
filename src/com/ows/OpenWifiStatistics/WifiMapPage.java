@@ -13,6 +13,7 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView; 
 import com.ows.OpenWifiStatistics.Services.LocationFinder;
+import com.ows.OpenWifiStatistics.Services.MonitoringService;
 
 public class WifiMapPage extends MapActivity {
 	
@@ -24,9 +25,9 @@ public class WifiMapPage extends MapActivity {
         @Override public void handleMessage(Message msg) {
         	switch(msg.what) {
         		case 2:
-					if(Globals.service!=null) {
-						mapController.setCenter(new GeoPoint((int) (Globals.service.getLatitude()* 1E6), (int) (Globals.service.getLongitude()* 1E6)));
-						Toast.makeText(getApplicationContext(), "Location: " + Globals.service.getLatitude() + " " + Globals.service.getLongitude(), Toast.LENGTH_SHORT).show(); 
+					if(MonitoringService.service!=null) {
+						mapController.setCenter(new GeoPoint((int) (MonitoringService.service.getLatitude()* 1E6), (int) (MonitoringService.service.getLongitude()* 1E6)));
+						Toast.makeText(getApplicationContext(), "Location: " + MonitoringService.service.getLatitude() + " " + MonitoringService.service.getLongitude(), Toast.LENGTH_SHORT).show(); 
 					}
         			break;
         	}
@@ -46,7 +47,7 @@ public class WifiMapPage extends MapActivity {
         mapController = mapView.getController();
         mapController.setZoom(16);
 
-        if(Globals.service==null) {
+        if(MonitoringService.service==null) {
         	AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle("Error");
             alertDialog.setMessage("Please start the monitoring service first to get your accurate position.");
@@ -57,9 +58,9 @@ public class WifiMapPage extends MapActivity {
             alertDialog.show();
             mapController.setCenter(new GeoPoint((int) (LocationFinder.defaultLatitude* 1E6), (int) (LocationFinder.defaultLongitude* 1E6)));
         } else {
-        	Globals.service.setUIHandler(handler);
+        	MonitoringService.service.setUIHandler(handler);
         	
-	        mapController.setCenter(new GeoPoint((int) (Globals.service.getLatitude()* 1E6), (int) (Globals.service.getLongitude()* 1E6)));
+	        mapController.setCenter(new GeoPoint((int) (MonitoringService.service.getLatitude()* 1E6), (int) (MonitoringService.service.getLongitude()* 1E6)));
 	    }
         
     }

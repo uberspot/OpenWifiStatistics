@@ -7,7 +7,6 @@ import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.ows.OpenWifiStatistics.Globals;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -32,9 +31,14 @@ import androidStorageUtils.StorageUtils;
 
 public class MonitoringService extends Service {
 	
-	public int scanCounter, APCounter;
+	/** Holds the current number of wifi scans */
+	public int scanCounter;
+	
+	/** Holds the current recorded number of (non-unique) Access Points scanned */
+	public int APCounter;
 	
 	/* Handler stuff */
+	
 	private Handler uiHandler=null;
 	
 	public void setUIHandler(Handler uiHandler){ this.uiHandler = uiHandler; }
@@ -71,14 +75,18 @@ public class MonitoringService extends Service {
         }
     };
 	
-	/* Cached scanResults */
+	/* Cached scan results */
 	private ConcurrentHashMap<String, EScanResult> scanResults;
 	
 	public ConcurrentHashMap<String, EScanResult> getScanResults() { return scanResults; }
 	
 	private boolean autoUpload;
+	
 	private static String serverURL;
 	public static final String defaultServerUrl = "http://195.251.232.92/wifi/";
+	
+	/** true if the service is currently uploading cached results to a remote
+	 * server, false otherwise */
 	public static boolean uploading = false;
 	
 	private StorageUtils storageUtils;
@@ -94,7 +102,7 @@ public class MonitoringService extends Service {
 	/** Schedules autoupload tasks and wifi scan tasks */
 	Timer scanTimer, uploadTimer, locationTimer, saveTimer;
 
-	/** Location stuff */
+	/* Location stuff */
 	private LocationFinder locationFinder;
 	
 	private boolean providerDisabled = true;
@@ -108,6 +116,7 @@ public class MonitoringService extends Service {
 	public boolean isProviderDisabled() { return providerDisabled; }
 	
 	LocationListener listener = new LocationListener(){
+		
 		public void onLocationChanged(Location location) {
 			if(!(location.getProvider().equalsIgnoreCase("gps") || location.getProvider().equalsIgnoreCase("network"))) {
 				latitude = LocationFinder.defaultLatitude;
@@ -120,7 +129,6 @@ public class MonitoringService extends Service {
     			if(uiHandler!=null)
     				uiHandler.sendEmptyMessage(2);
 	        }
-			//System.out.println("Location: " + latitude + " " + longitude);
 		}
 
 		public void onProviderDisabled(String provider) {
@@ -129,6 +137,8 @@ public class MonitoringService extends Service {
 		public void onProviderEnabled(String provider) {}
 		public void onStatusChanged(String provider, int status, Bundle extras) { }
 		};
+
+	public static MonitoringService service = null;
 	
 	@Override
 	public IBinder onBind(Intent arg0) { return null; }
@@ -138,7 +148,7 @@ public class MonitoringService extends Service {
 	public void onCreate() { 
 		super.onCreate();
 		
-		Globals.service = this;
+		MonitoringService.service = this;
 		
 		//Load previous scan results possibly saved in inner storage
 		storageUtils = new StorageUtils(getApplicationContext());
@@ -152,11 +162,6 @@ public class MonitoringService extends Service {
 		if(scanResults==null)
 			scanResults = new ConcurrentHashMap<String, EScanResult>(1000);
 
-		scanTimer = new Timer("Scan Timer");
-		uploadTimer = new Timer("Upload Timer");
-		locationTimer = new Timer("Location Timer");
-		saveTimer = new Timer("AutoSave Timer");
-		
 		//start listening for current location
 		locationFinder = new LocationFinder((LocationManager) getSystemService(Context.LOCATION_SERVICE), listener);
 		
@@ -172,14 +177,22 @@ public class MonitoringService extends Service {
 	
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
+	    scanTimer = new Timer("Scan Timer");
 	    scanTimer.schedule( new ScanTask() , 5000, scanTimeout);
+	    
+	    uploadTimer = new Timer("Upload Timer");
 	    uploadTimer.schedule( new UploadResultsTask() , 10000, uploadTimeout);
+	    
+	    locationTimer = new Timer("Location Timer");
 	    locationTimer.schedule( new GetLocationTask(handler) , 5000, locationTimeout);
+	    
+	    saveTimer = new Timer("AutoSave Timer");
 	    saveTimer.schedule(new TimerTask() {
 			@Override public void run() {
-				cacheInternallyResults();
+				saveInternallyCachedResults();
 			}
 	    }, 60000, 60000);
+	    
 	    if(!wifi.isWifiEnabled()) {
 	    	Toast.makeText(this,"Please enable wifi first!", Toast.LENGTH_SHORT).show();
 	    } else {
@@ -187,6 +200,8 @@ public class MonitoringService extends Service {
 	    }
 	}
 	
+	/** Loads user preferences
+	 */
 	public void loadPreferences() {
 		 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		 try {
@@ -228,10 +243,10 @@ public class MonitoringService extends Service {
 		uploadTimer.cancel();
 		locationTimer.cancel();
 		saveTimer.cancel();
-		cacheInternallyResults();
+		saveInternallyCachedResults();
 		if(locationFinder.startedListening)
 			locationFinder.stopListening();
-		Globals.service = null;
+		MonitoringService.service = null;
 		Toast.makeText(this, "Stopped monitoring", Toast.LENGTH_SHORT).show();
 	}
 	
@@ -264,6 +279,13 @@ public class MonitoringService extends Service {
 		return (wifi==null) ? null : wifi.getConfiguredNetworks();
 	}
 	
+	/** Converts the ConcurrentHashMap to a String formatted as a csv.
+	 * The first comma separated line contains the names of the columns
+	 * (bssid,capabilities,ssid,provider,frequency,level,longitude,latitude)
+	 * and each subsequent line holds the scan results
+	 * @param results
+	 * @return
+	 */
 	public static String resultsToCSVString(ConcurrentHashMap<String, EScanResult> results) {
 		StringBuffer csv = new StringBuffer();
 		csv.append("bssid,capabilities,ssid,provider,frequency,level,longitude,latitude\n");
@@ -291,16 +313,17 @@ public class MonitoringService extends Service {
         }
     }
     
-    /** Task that just performs a scan. */
+    /** Task that uploads the cached results if the wifi is enabled and the 
+     * corresponding setting (autoupload) is set to true. */
     private class UploadResultsTask extends TimerTask {
         @Override public void run() {
-        	if (wifi!=null && wifi.isWifiEnabled() && autoUpload){ //also check if is currently connected to internet
+        	if (wifi!=null && wifi.isWifiEnabled() && autoUpload) {
         		uploadResults();
         	}
         }
     }
     
-    /** Task that listens for location changes for 60 seconds before powering off. */
+    /** Task that listens for location changes for <locationTaskTTL> seconds before stopping. */
     private class GetLocationTask extends TimerTask {
     	private Handler handler;
     	public GetLocationTask(Handler handler) { this.handler = handler; }
@@ -311,19 +334,22 @@ public class MonitoringService extends Service {
         }
     }
     
+    /** Task that uploads the results in a different thread so that the user interface doesn't "freeze"
+     * on each upload. */
     private class ForkedUploadTask extends TimerTask {
 		@Override public void run() {
 			if(!MonitoringService.uploading) {
 				MonitoringService.uploading = true;
 				ResultUploader formUploader = new ResultUploader(serverURL+"wifistats.php");
 				formUploader.sendAll(scanResults);
-				cacheInternallyResults();
+				saveInternallyCachedResults();
 				MonitoringService.uploading = false;
 			}
 		}		
     }
     
-    public void cacheInternallyResults() {
+    /** Saves the cached results to the internal storage */
+    public void saveInternallyCachedResults() {
 		storageUtils.saveObjectToInternalStorage(scanResults, "scanresults");
 	}
 }

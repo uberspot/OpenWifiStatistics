@@ -10,6 +10,9 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 
+/** Class that listens for broadcast messages from the Wifi Service and forwards 
+ * those messages to a handler. 
+ */
 public class WifiBReceiver extends BroadcastReceiver {
 
 	private WifiManager manager;
