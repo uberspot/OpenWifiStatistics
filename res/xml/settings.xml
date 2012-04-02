@@ -33,7 +33,7 @@
         <EditTextPreference
                 android:name="Location scan time"
                 android:summary="Time in which location is scanned(in seconds)"
-                android:defaultValue="120"
+                android:defaultValue="180"
                 android:title="@string/location_ttl"
                 android:key="lscan_ttl"
                 android:inputType="phone" />

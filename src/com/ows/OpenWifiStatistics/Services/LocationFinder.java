@@ -17,9 +17,11 @@ public class LocationFinder  {
 	
 	private LocationManager locationManager;
 	
+	public LocationManager getLocationManager() { return locationManager; }
+	
 	private LocationListener locationListener;
 	
-	private Criteria criteria = new Criteria();
+	private Criteria criteria;
 	
 	private LocationListener innerLocationManager = new LocationListener(){
 
@@ -55,14 +57,20 @@ public class LocationFinder  {
 	public LocationFinder(LocationManager lmngr, LocationListener listener) {
 		locationManager = lmngr;//(LocationManager) app.getSystemService(Context.LOCATION_SERVICE);
 		locationListener = listener;
+		
+		criteria = new Criteria();
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
 		criteria.setSpeedRequired(false);
 		startedListening = false;
 	}
 	
+	/** Starts listening for location changes from the LocationManager. Sets the minimum
+	 * time interval between updates from providers to 6 seconds and the minimum distance to 1 meter 
+	 * to consume less energy.
+	 */
 	public void startListening() {
-		startListening(0,0,0,0);
+		startListening(6000, 1, 6000, 1);
 	}
 	
 	/** Starts listening for location changes from GPS_PROVIDER and NETWORK_PROVIDER if they are enabled.
@@ -81,8 +89,17 @@ public class LocationFinder  {
 		startedListening = true;
 	}
 	
+	/** Location finder stops receiving updates about location changes
+	 */
 	public void stopListening() {
 		locationManager.removeUpdates(innerLocationManager);
 		startedListening = false;
-	}	
+	}
+	
+	/** @return false if neither GPS_PROVIDER nor NETWORK_PROVIDER is enabled, true otherwise;
+	 */
+	public boolean isEnabled() {
+		return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) 
+				&& locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER); 
+	}
 }

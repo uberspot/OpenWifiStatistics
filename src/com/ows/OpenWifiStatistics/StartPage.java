@@ -180,7 +180,7 @@ public class StartPage extends Activity {
             storage.savePreference(prefName, prefName, "true");
             
             //Set UI handler for service after it starts
-            new Timer().schedule(new TimerTask(){
+            new Timer("Temp Handler Timer").schedule(new TimerTask(){
     			@Override
     			public void run() {
     				if(MonitoringService.service!=null)

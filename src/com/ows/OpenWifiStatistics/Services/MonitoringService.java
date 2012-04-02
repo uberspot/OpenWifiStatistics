@@ -97,10 +97,10 @@ public class MonitoringService extends Service {
 	private static int scanTimeout, uploadTimeout, locationTimeout, locationTaskTTL; 
 	
 	/** Listens for results of wifi scans */
-	BroadcastReceiver receiver;
+	private BroadcastReceiver receiver;
 	
 	/** Schedules autoupload tasks and wifi scan tasks */
-	Timer scanTimer, uploadTimer, locationTimer, saveTimer;
+	private Timer scanTimer, uploadTimer, locationTimer, saveTimer;
 
 	/* Location stuff */
 	private LocationFinder locationFinder;
@@ -115,13 +115,10 @@ public class MonitoringService extends Service {
 	
 	public boolean isProviderDisabled() { return providerDisabled; }
 	
-	LocationListener listener = new LocationListener(){
+	private LocationListener listener = new LocationListener(){
 		
 		public void onLocationChanged(Location location) {
-			if(!(location.getProvider().equalsIgnoreCase("gps") || location.getProvider().equalsIgnoreCase("network"))) {
-				latitude = LocationFinder.defaultLatitude;
-	        	longitude = LocationFinder.defaultLongitude;
-	        } else {
+			if(location.getProvider().equalsIgnoreCase("gps") || location.getProvider().equalsIgnoreCase("network")) {
 	        	latitude = location.getLatitude();
 	        	longitude = location.getLongitude();
 	        	providerDisabled = false;
@@ -159,7 +156,7 @@ public class MonitoringService extends Service {
 		
 		scanResults = (ConcurrentHashMap<String, EScanResult>) storageUtils.loadObjectFromInternalStorage("scanresults");
 		
-		if(scanResults==null)
+		if(scanResults == null)
 			scanResults = new ConcurrentHashMap<String, EScanResult>(1000);
 
 		//start listening for current location
@@ -193,8 +190,13 @@ public class MonitoringService extends Service {
 			}
 	    }, 60000, 60000);
 	    
-	    if(!wifi.isWifiEnabled()) {
-	    	Toast.makeText(this,"Please enable wifi first!", Toast.LENGTH_SHORT).show();
+	    boolean wifiEnabled = wifi.isWifiEnabled(), locationEnabled = locationFinder.isEnabled();
+	    if(!wifiEnabled && !locationEnabled) {
+	    	Toast.makeText(this,"Please enable wifi and gps/network location to receive scans!", Toast.LENGTH_SHORT).show();
+	    } else if(!wifiEnabled) {
+	    	Toast.makeText(this,"Please enable wifi to receive scans!", Toast.LENGTH_SHORT).show();
+	    } else if(!locationEnabled) {
+	    	Toast.makeText(this,"Please enable gps or network location retrieving!", Toast.LENGTH_SHORT).show();
 	    } else {
 	    	Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
 	    }
@@ -215,23 +217,23 @@ public class MonitoringService extends Service {
 			 int usageScenario = Integer.parseInt(prefs.getString("usage_scenario", "1"));
 			 if(usageScenario == 1) {
 				scanTimeout = 30000; uploadTimeout = 420000;
-				locationTimeout = 40000; locationTaskTTL = 120000;
+				locationTimeout = 40000; locationTaskTTL = 240000;
 			 } else if(usageScenario == 2) {
-				scanTimeout = 5000; uploadTimeout = 720000;
+				scanTimeout = 7000; uploadTimeout = 720000;
 				locationTimeout = 10000; locationTaskTTL = Integer.MAX_VALUE; 
 			 } else if(usageScenario == 3) {
 				scanTimeout = 60000; uploadTimeout = 720000;
-				locationTimeout = 120000; locationTaskTTL = 120000;
+				locationTimeout = 120000; locationTaskTTL = 150000;
 			 } else {
 				 scanTimeout = Integer.parseInt(prefs.getString("wScanPref", "30")) * 1000;
 				 uploadTimeout = Integer.parseInt(prefs.getString("uploadPref", "420")) * 1000;
 				 locationTimeout = Integer.parseInt(prefs.getString("lScanPref", "60")) * 1000;
-				 locationTaskTTL = Integer.parseInt(prefs.getString("lscan_ttl", "120")) * 1000;
+				 locationTaskTTL = Integer.parseInt(prefs.getString("lscan_ttl", "180")) * 1000;
 			 }
 		 } catch (NumberFormatException e) {
              Toast.makeText(this,"Error in loading settings, using defaults", Toast.LENGTH_SHORT).show();
              scanTimeout = 30000; uploadTimeout = 420000;
-             locationTimeout = 40000; locationTaskTTL = 120000;
+             locationTimeout = 40000; locationTaskTTL = 240000;
 		 }
 	}
 	
