@@ -145,36 +145,56 @@ public class MonitoringService extends Service {
 	public void onCreate() { 
 		super.onCreate();
 		
-		MonitoringService.service = this;
-		
-		//Load previous scan results possibly saved in inner storage
 		storageUtils = new StorageUtils(getApplicationContext());
 		
 		loadPreferences();
 		
 		scanCounter = APCounter = 0;
 		
+		//Load previous scan results
 		scanResults = (ConcurrentHashMap<String, EScanResult>) storageUtils.loadObjectFromInternalStorage("scanresults");
 		
 		if(scanResults == null)
 			scanResults = new ConcurrentHashMap<String, EScanResult>(1000);
 
-		//start listening for current location
+		//Initialize location stuff
 		locationFinder = new LocationFinder((LocationManager) getSystemService(Context.LOCATION_SERVICE), listener);
 		
 		latitude = LocationFinder.defaultLatitude;
     	longitude = LocationFinder.defaultLongitude;
     	lastProvider = "network";
 		
+    	//Initialize wifi stuff
 		wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		
-		// Register Broadcast Receiver
-	    if (receiver == null)
-	     	receiver = new WifiBReceiver(wifi, handler);
+	    receiver = new WifiBReceiver(wifi, handler);
 	
 	    registerReceiver(receiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 	    
-	    scanTimer = new Timer("Scan Timer");
+	    //Check if wifi and location are enabled. If not stop the service
+	    boolean wifiEnabled = wifi.isWifiEnabled();
+	    boolean locationEnabled = locationFinder.isEnabled();
+	    
+	    if(!wifiEnabled && !locationEnabled) {
+	    	Toast.makeText(this,"Please enable wifi and gps/network location to receive scans!", Toast.LENGTH_SHORT).show();
+	    	stopSelf();
+	    } else if(!wifiEnabled) {
+	    	Toast.makeText(this,"Please enable wifi to receive scans!", Toast.LENGTH_SHORT).show();
+	    	stopSelf();
+	    } else if(!locationEnabled) {
+	    	Toast.makeText(this,"Please enable gps or network location retrieving!", Toast.LENGTH_SHORT).show();
+	    	stopSelf();
+	    } else {
+	    	MonitoringService.service = this;
+	    	initializeTimers();
+	    	Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
+	    }
+	}
+	/**
+	 * 
+	 */
+	private void initializeTimers() {
+		scanTimer = new Timer("Scan Timer");
 	    scanTimer.schedule( new ScanTask() , 5000, scanTimeout);
 	    
 	    uploadTimer = new Timer("Upload Timer");
@@ -189,17 +209,6 @@ public class MonitoringService extends Service {
 				saveInternallyCachedResults();
 			}
 	    }, 60000, 60000);
-	    
-	    boolean wifiEnabled = wifi.isWifiEnabled(), locationEnabled = locationFinder.isEnabled();
-	    if(!wifiEnabled && !locationEnabled) {
-	    	Toast.makeText(this,"Please enable wifi and gps/network location to receive scans!", Toast.LENGTH_SHORT).show();
-	    } else if(!wifiEnabled) {
-	    	Toast.makeText(this,"Please enable wifi to receive scans!", Toast.LENGTH_SHORT).show();
-	    } else if(!locationEnabled) {
-	    	Toast.makeText(this,"Please enable gps or network location retrieving!", Toast.LENGTH_SHORT).show();
-	    } else {
-	    	Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
-	    }
 	}
 	
 	/** Loads user preferences
@@ -241,10 +250,15 @@ public class MonitoringService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(receiver);
-		scanTimer.cancel();
-		uploadTimer.cancel();
-		locationTimer.cancel();
-		saveTimer.cancel();
+		if(scanTimer!=null)
+			scanTimer.cancel();
+		if(uploadTimer!=null)
+			uploadTimer.cancel();
+		if(locationTimer!=null)
+			locationTimer.cancel();
+		if(saveTimer!=null)
+			saveTimer.cancel();
+		
 		saveInternallyCachedResults();
 		if(locationFinder.startedListening)
 			locationFinder.stopListening();

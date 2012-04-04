@@ -53,6 +53,9 @@ public class StartPage extends Activity {
 	        			
 	        			resultsView.append("" + "\n\n"); //todo: display results in a prettier way 
 	        			break;
+			        case 3:
+			        	saveStoppedState();
+			        	break;
 			        default:
 			            break;
 	        }
@@ -62,6 +65,9 @@ public class StartPage extends Activity {
 	
     /** Displays the results of the monitoring on the bottom portion of the start page */
     private TextView resultsView;
+    
+    /** Toggle Monitoring button */
+    private Button toggleButton;
     
     /** Called when the activity is first created. */
     @Override
@@ -88,6 +94,7 @@ public class StartPage extends Activity {
         }
         
         resultsView = (TextView) findViewById(R.id.results);
+        toggleButton = (Button) findViewById(R.id.toggleMonitoring);
     }
     
     @Override
@@ -166,30 +173,35 @@ public class StartPage extends Activity {
      * @param v
      */
     public void toggleMonitoring(View v) {
-    	Button button = (Button) findViewById(R.id.toggleMonitoring);
     	if(storage.getPreference(prefName, prefName).equalsIgnoreCase("true") ){
-    		stopService(new Intent(StartPage.this, MonitoringService.class));
-    		button.setText(R.string.start_monitoring);
-    		storage.savePreference(prefName, prefName, "false");
-    		if(resultsView!=null) {
-    			resultsView.setText("");
-    		}
-    	}else {
-            startService(new Intent(StartPage.this, MonitoringService.class));
-            button.setText(R.string.stop_monitoring);
-            storage.savePreference(prefName, prefName, "true");
-            
-            //Set UI handler for service after it starts
-            new Timer("Temp Handler Timer").schedule(new TimerTask(){
-    			@Override
-    			public void run() {
-    				if(MonitoringService.service!=null)
-    		        	MonitoringService.service.setUIHandler(handler);
-    			}}, 4000);
+	    		stopService(new Intent(StartPage.this, MonitoringService.class));
+	    		saveStoppedState();
+    	} else {
+	            startService(new Intent(StartPage.this, MonitoringService.class));
+	            toggleButton.setText(R.string.stop_monitoring);
+	            storage.savePreference(prefName, prefName, "true");
+	            
+	            //Set UI handler for service after it starts
+	            new Timer("Temp Handler Timer").schedule(new TimerTask(){
+	    			@Override
+	    			public void run() {
+	    				if(MonitoringService.service != null)
+	    		        	MonitoringService.service.setUIHandler(handler);
+	    				else
+	    					handler.sendEmptyMessage(3);
+	    			}}, 3000);
     	}
-    	
-    	
     }
+    
+    /** Sets the toggle button text to Start, save the state as a preference 
+     * and resets the results view to empty
+	 */
+	private void saveStoppedState() {
+		toggleButton.setText(R.string.start_monitoring);
+		storage.savePreference(prefName, prefName, "false");
+		if(resultsView!=null)
+			resultsView.setText("");
+	}
     
     /** Sends a message to the Activities Handler. The handler then displays the given string as a Toast.
      * @param message the message to display as a Toast.
