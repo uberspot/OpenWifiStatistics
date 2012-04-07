@@ -70,7 +70,7 @@ public class LocationFinder  {
 	 * to consume less energy.
 	 */
 	public void startListening() {
-		startListening(6000, 1, 6000, 1);
+		startListening(6000, 5, 6000, 5);
 	}
 	
 	/** Starts listening for location changes from GPS_PROVIDER and NETWORK_PROVIDER if they are enabled.

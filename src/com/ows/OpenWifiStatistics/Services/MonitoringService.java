@@ -54,11 +54,13 @@ public class MonitoringService extends Service {
         			scanCounter++;
         			
         			for(ScanResult result : results) {
-        				APCounter++;
-        				if( !scanResults.containsKey(result.BSSID) ) {
-        					scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
-        				} else if(scanResults.get(result.BSSID).level <= result.level)
-    						scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
+        				if(latitude!= LocationFinder.defaultLatitude && longitude!= LocationFinder.defaultLongitude ) {
+        					APCounter++;
+	        				if( !scanResults.containsKey(result.BSSID) ) {
+	        					scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
+	        				} else if(scanResults.get(result.BSSID).level <= result.level)
+	        					scanResults.put(result.BSSID, new EScanResult(result, latitude, longitude, lastProvider));
+        				}
         			}
         			if(uiHandler!=null)
         				uiHandler.sendEmptyMessage(1);
@@ -187,7 +189,7 @@ public class MonitoringService extends Service {
 	    } else {
 	    	MonitoringService.service = this;
 	    	initializeTimers();
-	    	Toast.makeText(this,"Monitoring started", Toast.LENGTH_SHORT).show();
+	    	Toast.makeText(this, "Monitoring started", Toast.LENGTH_SHORT).show();
 	    }
 	}
 	/**
